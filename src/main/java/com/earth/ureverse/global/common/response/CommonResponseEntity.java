@@ -26,12 +26,4 @@ public class CommonResponseEntity<T> {
         return new CommonResponseEntity<>(false, null, new CustomError(message, status));
     }
 
-    public Map<String, Object> toMap(){
-        Map<String, Object> result = new HashMap<>();
-        result.put("success", success);
-        result.put("response", response);
-        result.put("error", error);
-        return result;
-    }
-
 }
