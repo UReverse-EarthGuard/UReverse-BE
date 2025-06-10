@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.earth.ureverse.global.auth.mapper.AuthMapper">
+
+    <select id="findByUsername" resultType="com.earth.ureverse.global.auth.dto.db.AuthenticatedUser">
+        SELECT ID, USERNAME, PASSWORD, ROLE
+        FROM USERS
+        WHERE USERNAME = #{username}
+    </select>
+
+</mapper>
