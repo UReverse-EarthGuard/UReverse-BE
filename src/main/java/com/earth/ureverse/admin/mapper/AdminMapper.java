@@ -1,4 +1,7 @@
 package com.earth.ureverse.admin.mapper;
 
-public class AdminMapper {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface AdminMapper {
 }

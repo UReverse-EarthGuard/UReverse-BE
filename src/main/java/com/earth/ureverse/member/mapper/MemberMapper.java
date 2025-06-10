@@ -1,4 +1,7 @@
 package com.earth.ureverse.member.mapper;
 
-public class MemberMapper {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface MemberMapper {
 }
