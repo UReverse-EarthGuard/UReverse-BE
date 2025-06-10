@@ -1,5 +1,5 @@
-# Base image 선택 (Java 21)
-FROM openjdk:21-jdk
+# Base image 선택
+FROM openjdk:17-jdk
 
 # 작업 디렉토리 설정
 WORKDIR /app
