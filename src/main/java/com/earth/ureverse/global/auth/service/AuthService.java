@@ -7,4 +7,6 @@ public interface AuthService {
 
     LoginResponseDto login(LoginRequestDto loginRequestDto);
 
+    LoginResponseDto refreshAccessToken(String refreshToken);
+
 }

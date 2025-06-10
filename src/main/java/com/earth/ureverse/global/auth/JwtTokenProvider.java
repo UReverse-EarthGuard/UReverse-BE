@@ -1,9 +1,12 @@
 package com.earth.ureverse.global.auth;
 
+import com.earth.ureverse.global.common.exception.TokenExpiredException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -75,10 +78,27 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Claims claims = jwtParser.parseSignedClaims(token).getPayload();
-            return !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
-            return false;
+
+            if (claims.getExpiration().before(new Date())) {
+                throw new TokenExpiredException("토큰이 만료되었습니다.");
+            }
+            return true;
+        } catch (JwtException e) {
+            throw new TokenExpiredException("유효하지 않은 토큰입니다.");
         }
+    }
+
+    // 쿠키에서 refreshToken을 꺼내오는 메서드
+    public String resolveRefreshToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 
 }
