@@ -5,6 +5,7 @@ import com.earth.ureverse.global.auth.dto.db.AuthenticatedUser;
 import com.earth.ureverse.global.auth.dto.request.LoginRequestDto;
 import com.earth.ureverse.global.auth.dto.response.LoginResponseDto;
 import com.earth.ureverse.global.auth.mapper.AuthMapper;
+import com.earth.ureverse.global.common.exception.TokenExpiredException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,8 +43,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDto refreshAccessToken(String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new TokenExpiredException("Refresh Token이 존재하지 않습니다.");
+        }
+
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new IllegalArgumentException("유효하지 않은 Refresh Token입니다.");
+            throw new TokenExpiredException("유효하지 않은 Refresh Token입니다.");
         }
 
         String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
