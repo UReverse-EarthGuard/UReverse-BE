@@ -7,10 +7,12 @@ import com.earth.ureverse.global.common.exception.TokenExpiredException;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.global.common.response.CustomError;
 
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -50,6 +52,20 @@ public class CommonControllerAdvice {
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<?> handleTokenExpiredException(TokenExpiredException e) {
         return response(e, HttpStatus.UNAUTHORIZED);    // 401
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<CommonResponseEntity<Object>> handleValidationException(MethodArgumentNotValidException ex) {
+        String message = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .findFirst()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .orElse("잘못된 요청입니다.");
+
+        return ResponseEntity
+                .badRequest()
+                .body(CommonResponseEntity.error(HttpStatus.BAD_REQUEST, message));
     }
 
 }

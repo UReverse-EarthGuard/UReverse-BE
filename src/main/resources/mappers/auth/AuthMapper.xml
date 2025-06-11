@@ -11,4 +11,19 @@
         WHERE EMAIL = #{email}
     </select>
 
+    <select id="existsByEmail" resultType="boolean" parameterType="string">
+        SELECT COUNT(*) > 0
+        FROM USERS
+        WHERE EMAIL = #{email}
+    </select>
+
+    <insert id="insertMember" parameterType="com.earth.ureverse.global.auth.dto.request.SignUpRequestDto">
+        <selectKey keyProperty="userId" resultType="long" order="BEFORE">
+            SELECT USERS_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO USERS (USER_ID, EMAIL, PASSWORD, NAME, ROLE, PHONE, CREATED_AT, CREATED_BY, UPDATED_AT, UPDATED_BY)
+        VALUES (#{userId}, #{email}, #{password}, #{name}, 'ROLE_MEMBER', #{phone}, SYSDATE, #{userId}, SYSDATE, #{userId})
+    </insert>
+
 </mapper>
