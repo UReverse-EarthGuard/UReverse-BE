@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginRequestDto {
 
-    private String username;    // id
+    private String email;    // 로그인 시, 사용하는 ID
     private String password;
 
 }

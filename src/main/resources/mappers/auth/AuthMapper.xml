@@ -5,10 +5,10 @@
 
 <mapper namespace="com.earth.ureverse.global.auth.mapper.AuthMapper">
 
-    <select id="findByUsername" resultType="com.earth.ureverse.global.auth.dto.db.AuthenticatedUser">
-        SELECT ID, USERNAME, PASSWORD, ROLE
+    <select id="findByEmail" resultType="com.earth.ureverse.global.auth.dto.db.AuthenticatedUser">
+        SELECT USER_ID, EMAIL, PASSWORD, ROLE
         FROM USERS
-        WHERE USERNAME = #{username}
+        WHERE EMAIL = #{email}
     </select>
 
 </mapper>

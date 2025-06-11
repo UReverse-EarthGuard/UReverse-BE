@@ -48,4 +48,18 @@ public class AuthController {
         return CommonResponseEntity.success(authService.refreshAccessToken(refreshToken));
     }
 
+    @PostMapping("/logout")
+    public CommonResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie expiredCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
+        return CommonResponseEntity.success(null);
+    }
+
 }

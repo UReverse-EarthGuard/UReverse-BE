@@ -9,6 +9,6 @@ import java.util.Optional;
 @Mapper
 public interface AuthMapper {
 
-    Optional<AuthenticatedUser> findByUsername(@Param(value="username") String username);
+    Optional<AuthenticatedUser> findByEmail(@Param(value="email") String email);
 
 }
