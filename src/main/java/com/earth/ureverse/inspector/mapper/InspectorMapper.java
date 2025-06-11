@@ -1,4 +1,7 @@
 package com.earth.ureverse.inspector.mapper;
 
-public class InspectorMapper {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface InspectorMapper {
 }
