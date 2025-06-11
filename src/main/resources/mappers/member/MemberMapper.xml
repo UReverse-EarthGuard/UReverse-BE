@@ -5,4 +5,10 @@
 
 <mapper namespace="com.earth.ureverse.member.mapper.MemberMapper">
 
+    <update id="updateIsActive">
+        UPDATE USERS
+        SET ISACTIVE = #{isActive}, UPDATED_AT = SYSDATE
+        WHERE USER_ID = #{userId}
+    </update>
+
 </mapper>
