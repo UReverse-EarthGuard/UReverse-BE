@@ -16,4 +16,6 @@ public interface AuthMapper {
 
     void insertMember(SignUpRequestDto signupRequestDto);
 
+    Optional<AuthenticatedUser> findByUserId(@Param(value="userId") Long userId);
+
 }
