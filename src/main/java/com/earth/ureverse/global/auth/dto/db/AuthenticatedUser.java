@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticatedUser {
 
-    private Long id;    // PK
-    private String username;
+    private Long userId;    // PK
+    private String email;
     private String password;
     private String role;
 

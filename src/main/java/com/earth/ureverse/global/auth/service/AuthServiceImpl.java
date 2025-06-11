@@ -27,15 +27,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getUsername(), loginRequestDto.getPassword())
+                new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword())
         );
 
         List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        String accessToken = jwtTokenProvider.generateAccessToken(loginRequestDto.getUsername(), roles);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(loginRequestDto.getUsername());
+        String accessToken = jwtTokenProvider.generateAccessToken(loginRequestDto.getEmail(), roles);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(loginRequestDto.getEmail());
         String role = authentication.getAuthorities().iterator().next().getAuthority();
 
         return new LoginResponseDto(accessToken, refreshToken, role);
@@ -51,10 +51,10 @@ public class AuthServiceImpl implements AuthService {
             throw new TokenExpiredException("유효하지 않은 Refresh Token입니다.");
         }
 
-        String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
-        AuthenticatedUser user = authMapper.findByUsername(username)
+        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        AuthenticatedUser user = authMapper.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-        String newAccessToken = jwtTokenProvider.generateAccessToken(user.getUsername(), List.of(user.getRole()));
+        String newAccessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), List.of(user.getRole()));
 
         return new LoginResponseDto(newAccessToken, null, user.getRole());
     }
