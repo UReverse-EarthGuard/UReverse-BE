@@ -1,6 +1,7 @@
 package com.earth.ureverse.inspector.service;
 
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto;
 import com.earth.ureverse.inspector.dto.response.PendingInspectionProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,5 +17,10 @@ public class InspectorServiceImpl implements InspectorService{
     @Override
     public List<PendingInspectionProductDto> getPendingInspectionProductsByInspector(Long inspectorId) {
         return productMapper.getPendingInspectionProductsByInspector(inspectorId);
+    }
+
+    @Override
+    public List<InspectionCompletedProductDto> getInspectionCompletedProductsByInspector(Long inspectorId) {
+        return productMapper.getInspectionCompletedProductsByInspector(inspectorId);
     }
 }
