@@ -1,4 +1,9 @@
 package com.earth.ureverse.member.service;
 
-public class MemberService {
+import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
+
+public interface MemberService {
+
+    void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto);
+
 }
