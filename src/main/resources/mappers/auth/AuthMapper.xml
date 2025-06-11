@@ -12,7 +12,7 @@
     </select>
 
     <select id="existsByEmail" resultType="boolean" parameterType="string">
-        SELECT COUNT(*) > 0
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
         FROM USERS
         WHERE EMAIL = #{email}
     </select>
