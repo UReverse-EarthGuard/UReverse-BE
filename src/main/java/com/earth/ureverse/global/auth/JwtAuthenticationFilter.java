@@ -29,13 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
-            String username = jwtTokenProvider.getUsernameFromToken(token);
+            String email = jwtTokenProvider.getEmailFromToken(token);
             List<String> roles = jwtTokenProvider.getRolesFromToken(token);
 
             // Spring Security 인증 객체 생성
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
-                            username,
+                            email,
                             null,
                             roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
                     );

@@ -14,13 +14,18 @@ import java.util.List;
 public class CustomUserDetails implements UserDetails {
 
     private final Long userId;
-    private final String username;
+    private final String email;
     private final String password;
     private final String role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override
