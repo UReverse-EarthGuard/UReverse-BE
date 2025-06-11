@@ -2,11 +2,13 @@ package com.earth.ureverse.global.auth.controller;
 
 import com.earth.ureverse.global.auth.JwtTokenProvider;
 import com.earth.ureverse.global.auth.dto.request.LoginRequestDto;
+import com.earth.ureverse.global.auth.dto.request.SignUpRequestDto;
 import com.earth.ureverse.global.auth.dto.response.LoginResponseDto;
 import com.earth.ureverse.global.auth.service.AuthService;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -60,6 +62,12 @@ public class AuthController {
 
         response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
         return CommonResponseEntity.success(null);
+    }
+
+    @PostMapping("/sign-up")
+    public CommonResponseEntity<String> signup(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
+        authService.signUp(signUpRequestDto);
+        return CommonResponseEntity.success("회원가입이 완료되었습니다.");
     }
 
 }
