@@ -29,7 +29,7 @@ public class InspectorController {
     public ResponseEntity<CommonResponseEntity<Object>> getPendingInspectionProducts(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        if (!"INSPECTOR".equals(userDetails.getRole())) {
+        if (!"ROLE_INSPECTOR".equals(userDetails.getRole())) {
             throw new AccessDeniedException("검수자 권한이 필요합니다.");
         }
         List<PendingInspectionProductDto> result =
