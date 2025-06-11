@@ -33,7 +33,7 @@ public class InspectorController {
             throw new AccessDeniedException("검수자 권한이 필요합니다.");
         }
         List<PendingInspectionProductDto> result =
-                inspectorService.getPendingInspectionProductsByInspector(userDetails.getRole());
+                inspectorService.getPendingInspectionProductsByInspector(userDetails.getUserId());
         return ResponseEntity.ok(CommonResponseEntity.success(result));
     }
 }
