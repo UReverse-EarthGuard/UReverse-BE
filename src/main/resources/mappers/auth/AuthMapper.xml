@@ -8,7 +8,7 @@
     <select id="findByEmail" resultType="com.earth.ureverse.global.auth.dto.db.AuthenticatedUser">
         SELECT USER_ID, EMAIL, PASSWORD, ROLE
         FROM USERS
-        WHERE EMAIL = #{eamil}
+        WHERE EMAIL = #{email}
     </select>
 
 </mapper>
