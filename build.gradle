@@ -39,7 +39,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// Oracle
-	runtimeOnly 'com.oracle.database.jdbc:ojdbc11'
+	runtimeOnly 'com.oracle.database.jdbc:ojdbc11:21.9.0.0'
 
 	// JDBC
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
