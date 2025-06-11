@@ -2,6 +2,7 @@ package com.earth.ureverse.inspector.controller;
 
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
+import com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto;
 import com.earth.ureverse.inspector.dto.response.PendingInspectionProductDto;
 import com.earth.ureverse.inspector.service.InspectorService;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +30,18 @@ public class InspectorController {
     public ResponseEntity<CommonResponseEntity<Object>> getPendingInspectionProducts(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        if (!"ROLE_INSPECTOR".equals(userDetails.getRole())) {
-            throw new AccessDeniedException("검수자 권한이 필요합니다.");
-        }
         List<PendingInspectionProductDto> result =
                 inspectorService.getPendingInspectionProductsByInspector(userDetails.getUserId());
+        return ResponseEntity.ok(CommonResponseEntity.success(result));
+    }
+
+    // 검수 완료된 상품 목록 조회
+    @GetMapping("/completed-products")
+    public ResponseEntity<CommonResponseEntity<Object>> getInspectionCompletedProducts(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        List<InspectionCompletedProductDto> result =
+                inspectorService.getInspectionCompletedProductsByInspector(userDetails.getUserId());
         return ResponseEntity.ok(CommonResponseEntity.success(result));
     }
 }

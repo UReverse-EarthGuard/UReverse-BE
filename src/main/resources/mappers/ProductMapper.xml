@@ -52,4 +52,35 @@
         WHERE p.status = 'FINISH'
     </select>
 
+    <select id="getInspectionCompletedProductsByInspector"
+            resultType="com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto">
+
+        SELECT
+        p.product_id AS productId,
+        b.name AS brandName,
+        c.name AS categoryName,
+        p.status AS status,
+        img.url AS imageUrl,
+        TO_CHAR(p.created_at, 'YYYY-MM-DD HH24:MI:SS') AS createdAt,
+        bcc.point AS expectedPoint
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        JOIN brand_category_combination bcc
+        ON p.brand_id = bcc.brand_id
+        AND p.category_id = bcc.category_id
+        AND bcc.inspector_id = #{inspectorId}
+        LEFT JOIN (
+        SELECT product_id,
+        MIN(url) KEEP (DENSE_RANK FIRST ORDER BY created_at) AS url
+        FROM product_image
+        GROUP BY product_id
+        ) img ON img.product_id = p.product_id
+        WHERE p.status = 'REJECT'
+        OR p.status = 'SECOND_INSPECT'
+        OR p.status = 'DELIVERY_REQUEST'
+        OR p.status = 'DELIVERING'
+        OR p.status = 'FINISH'
+    </select>
+
 </mapper>
