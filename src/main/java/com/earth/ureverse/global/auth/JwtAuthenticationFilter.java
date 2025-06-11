@@ -6,15 +6,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 // JWT를 확인하고 인증 객체를 SecurityContext에 등록
 @Component
@@ -36,16 +33,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            Long userId = jwtTokenProvider.getUserIdFromToken(token);
             String email = jwtTokenProvider.getEmailFromToken(token);
-            List<String> roles = jwtTokenProvider.getRolesFromToken(token);
+            String role = jwtTokenProvider.getRolesFromToken(token).get(0);
+
+            CustomUserDetails userDetails = new CustomUserDetails(
+                    userId,
+                    email,
+                    null,   // password는 불필요 (JWT로 인증)
+                    role
+            );
 
             // Spring Security 인증 객체 생성
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            email,
-                            null,
-                            roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
-                    );
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

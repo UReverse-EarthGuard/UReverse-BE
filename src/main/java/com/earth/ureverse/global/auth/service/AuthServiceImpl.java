@@ -38,9 +38,12 @@ public class AuthServiceImpl implements AuthService {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        String accessToken = jwtTokenProvider.generateAccessToken(loginRequestDto.getEmail(), roles);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(loginRequestDto.getEmail());
-        String role = authentication.getAuthorities().iterator().next().getAuthority();
+        AuthenticatedUser authenticatedUser = authMapper.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        String accessToken = jwtTokenProvider.generateAccessToken(authenticatedUser.getUserId(), authenticatedUser.getEmail(), roles);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(authenticatedUser.getUserId(), authenticatedUser.getEmail());
+        String role = authenticatedUser.getRole();
 
         return new LoginResponseDto(accessToken, refreshToken, role);
     }
@@ -55,12 +58,14 @@ public class AuthServiceImpl implements AuthService {
             throw new TokenExpiredException("유효하지 않은 Refresh Token입니다.");
         }
 
-        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
-        AuthenticatedUser user = authMapper.findByEmail(email)
+        Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+        AuthenticatedUser authenticatedUser = authMapper.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
-        String newAccessToken = jwtTokenProvider.generateAccessToken(user.getEmail(), List.of(user.getRole()));
+        String newAccessToken = jwtTokenProvider.generateAccessToken(
+                authenticatedUser.getUserId(), authenticatedUser.getEmail(), List.of(authenticatedUser.getRole())
+        );
 
-        return new LoginResponseDto(newAccessToken, null, user.getRole());
+        return new LoginResponseDto(newAccessToken, null, authenticatedUser.getRole());
     }
 
     @Override

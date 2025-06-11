@@ -6,13 +6,13 @@
 <mapper namespace="com.earth.ureverse.global.auth.mapper.AuthMapper">
 
     <select id="findByEmail" resultType="com.earth.ureverse.global.auth.dto.db.AuthenticatedUser">
-        SELECT USER_ID, EMAIL, PASSWORD, ROLE
+        SELECT USER_ID AS USERID, EMAIL, PASSWORD, ROLE, ISACTIVE
         FROM USERS
         WHERE EMAIL = #{email}
     </select>
 
     <select id="existsByEmail" resultType="boolean" parameterType="string">
-        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS EXISTS_FLAG
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
         FROM USERS
         WHERE EMAIL = #{email}
     </select>
@@ -21,5 +21,11 @@
         INSERT INTO USERS (USER_ID, EMAIL, PASSWORD, NAME, ROLE, PHONE, CREATED_AT, CREATED_BY, UPDATED_AT, UPDATED_BY)
         VALUES (USERS_SEQ.NEXTVAL, #{email}, #{password}, #{name}, 'ROLE_MEMBER', #{phone}, SYSDATE, USERS_SEQ.CURRVAL, SYSDATE, USERS_SEQ.CURRVAL)
     </insert>
+
+    <select id="findByUserId" resultType="com.earth.ureverse.global.auth.dto.db.AuthenticatedUser">
+        SELECT USER_ID AS USERID, EMAIL, PASSWORD, ROLE, ISACTIVE
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
 
 </mapper>

@@ -1,9 +1,6 @@
 package com.earth.ureverse.global.common.controller;
 
-import com.earth.ureverse.global.common.exception.BadRequestException;
-import com.earth.ureverse.global.common.exception.IllegalParameterException;
-import com.earth.ureverse.global.common.exception.NotFoundException;
-import com.earth.ureverse.global.common.exception.TokenExpiredException;
+import com.earth.ureverse.global.common.exception.*;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.global.common.response.CustomError;
 
@@ -61,8 +58,8 @@ public class CommonControllerAdvice {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<CommonResponseEntity<Object>> handleValidationException(MethodArgumentNotValidException ex) {
-        String message = ex.getBindingResult()
+    public ResponseEntity<CommonResponseEntity<Object>> handleValidationException(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult()
                 .getAllErrors()
                 .stream()
                 .findFirst()
@@ -72,6 +69,24 @@ public class CommonControllerAdvice {
         return ResponseEntity
                 .badRequest()
                 .body(CommonResponseEntity.error(HttpStatus.BAD_REQUEST, message));
+    }
+
+    @ExceptionHandler(InactiveUserException.class)
+    public ResponseEntity<CommonResponseEntity<?>> handleInactiveUserException(InactiveUserException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(CommonResponseEntity.error(HttpStatus.UNAUTHORIZED, e.getMessage()));
+    }
+
+    @ExceptionHandler(AlreadyWithdrawnException.class)
+    public ResponseEntity<CommonResponseEntity<?>> handleAlreadyWithdrawn(AlreadyWithdrawnException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(CommonResponseEntity.error(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordMismatchException.class)
+    public ResponseEntity<CommonResponseEntity<?>> handlePasswordMismatch(PasswordMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(CommonResponseEntity.error(HttpStatus.UNAUTHORIZED, ex.getMessage()));
     }
 
 }

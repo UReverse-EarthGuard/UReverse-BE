@@ -38,31 +38,32 @@ public class JwtTokenProvider {
     }
 
     // Access Token 생성(권한 포함)
-    public String generateAccessToken(String email, List<String> roles) {
-        return generateToken(email, roles, accessTokenValidTime, "access");
+    public String generateAccessToken(Long userId, String email, List<String> roles) {
+        return generateToken(userId,  email, roles, accessTokenValidTime, "access");
     }
 
     // Refresh Token 생성(권한 포함X)
-    public String generateRefreshToken(String email) {
-        return generateToken(email, null, refreshTokenValidTime, "refresh");
+    public String generateRefreshToken(Long userId, String email) {
+        return generateToken(userId,  email, null, refreshTokenValidTime, "refresh");
     }
 
-    private String generateToken(String email, List<String> roles, long validTime, String type) {
+    private String generateToken(Long userId, String email, List<String> roles, long validTime, String type) {
         Date now = new Date();
         Date expirationTime = new Date(now.getTime() + validTime);
 
         return Jwts.builder()
-                .subject(email)
-                .issuedAt(now)
-                .expiration(expirationTime)
+                .subject(userId.toString())
+                .claim("email", email)
                 .claim("roles", roles)
                 .claim("type", type)    // access, refresh
+                .issuedAt(now)
+                .expiration(expirationTime)
                 .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 
     public String getEmailFromToken(String token) {
-        return jwtParser.parseSignedClaims(token).getPayload().getSubject();
+        return jwtParser.parseSignedClaims(token).getPayload().get("email").toString();
     }
 
     public List<String> getRolesFromToken(String token) {
@@ -104,6 +105,11 @@ public class JwtTokenProvider {
             }
         }
         return null;
+    }
+
+    public Long getUserIdFromToken(String token) {
+        Claims claims = jwtParser.parseSignedClaims(token).getPayload();
+        return Long.valueOf(claims.getSubject());
     }
 
 }
