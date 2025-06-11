@@ -10,6 +10,7 @@ import com.earth.ureverse.global.common.response.CustomError;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -52,4 +53,8 @@ public class CommonControllerAdvice {
         return response(e, HttpStatus.UNAUTHORIZED);    // 401
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException e) {
+        return response(e, HttpStatus.FORBIDDEN);
+    }
 }
