@@ -39,15 +39,15 @@ public class JwtTokenProvider {
 
     // Access Token 생성(권한 포함)
     public String generateAccessToken(String email, List<String> roles) {
-        return generateToken(email, roles, accessTokenValidTime);
+        return generateToken(email, roles, accessTokenValidTime, "access");
     }
 
     // Refresh Token 생성(권한 포함X)
     public String generateRefreshToken(String email) {
-        return generateToken(email, null, refreshTokenValidTime);
+        return generateToken(email, null, refreshTokenValidTime, "refresh");
     }
 
-    private String generateToken(String email, List<String> roles, long validTime) {
+    private String generateToken(String email, List<String> roles, long validTime, String type) {
         Date now = new Date();
         Date expirationTime = new Date(now.getTime() + validTime);
 
@@ -56,6 +56,7 @@ public class JwtTokenProvider {
                 .issuedAt(now)
                 .expiration(expirationTime)
                 .claim("roles", roles)
+                .claim("type", type)    // access, refresh
                 .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
@@ -72,6 +73,10 @@ public class JwtTokenProvider {
                     .toList();
         }
         return List.of();
+    }
+
+    public String getTokenType(String token) {
+        return jwtParser.parseSignedClaims(token).getPayload().get("type", String.class);
     }
 
     // 토큰 유효성 검증(서명, 만료 체크)
