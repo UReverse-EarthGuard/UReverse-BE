@@ -23,7 +23,7 @@
     </insert>
 
     <select id="findByUserId" resultType="com.earth.ureverse.global.auth.dto.db.AuthenticatedUser">
-        SELECT USER_ID AS USERID, EMAIL, PASSWORD, ROLE
+        SELECT USER_ID AS USERID, EMAIL, PASSWORD, ROLE, ISACTIVE
         FROM USERS
         WHERE USER_ID = #{userId}
     </select>

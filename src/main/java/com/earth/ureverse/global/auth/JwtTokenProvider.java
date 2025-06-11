@@ -63,7 +63,7 @@ public class JwtTokenProvider {
     }
 
     public String getEmailFromToken(String token) {
-        return jwtParser.parseSignedClaims(token).getPayload().getSubject();
+        return jwtParser.parseSignedClaims(token).getPayload().get("email").toString();
     }
 
     public List<String> getRolesFromToken(String token) {

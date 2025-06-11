@@ -71,4 +71,16 @@ public class CommonControllerAdvice {
                 .body(CommonResponseEntity.error(HttpStatus.UNAUTHORIZED, e.getMessage()));
     }
 
+    @ExceptionHandler(AlreadyWithdrawnException.class)
+    public ResponseEntity<CommonResponseEntity<?>> handleAlreadyWithdrawn(AlreadyWithdrawnException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(CommonResponseEntity.error(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordMismatchException.class)
+    public ResponseEntity<CommonResponseEntity<?>> handlePasswordMismatch(PasswordMismatchException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(CommonResponseEntity.error(HttpStatus.UNAUTHORIZED, ex.getMessage()));
+    }
+
 }

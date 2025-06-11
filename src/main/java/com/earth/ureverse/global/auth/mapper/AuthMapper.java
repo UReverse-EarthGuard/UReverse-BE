@@ -18,4 +18,6 @@ public interface AuthMapper {
 
     Optional<AuthenticatedUser> findByUserId(@Param(value="userId") Long userId);
 
+    void updateIsActive(@Param("userId") Long userId, @Param("isActive") String inactive);
+
 }
