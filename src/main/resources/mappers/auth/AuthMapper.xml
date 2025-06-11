@@ -18,12 +18,8 @@
     </select>
 
     <insert id="insertMember" parameterType="com.earth.ureverse.global.auth.dto.request.SignUpRequestDto">
-        <selectKey keyProperty="userId" resultType="long" order="BEFORE">
-            SELECT USERS_SEQ.NEXTVAL FROM DUAL
-        </selectKey>
-
         INSERT INTO USERS (USER_ID, EMAIL, PASSWORD, NAME, ROLE, PHONE, CREATED_AT, CREATED_BY, UPDATED_AT, UPDATED_BY)
-        VALUES (#{userId}, #{email}, #{password}, #{name}, 'ROLE_MEMBER', #{phone}, SYSDATE, #{userId}, SYSDATE, #{userId})
+        VALUES (USERS_SEQ.NEXTVAL, #{email}, #{password}, #{name}, 'ROLE_MEMBER', #{phone}, SYSDATE, USERS_SEQ.CURRVAL, SYSDATE, USERS_SEQ.CURRVAL)
     </insert>
 
 </mapper>
