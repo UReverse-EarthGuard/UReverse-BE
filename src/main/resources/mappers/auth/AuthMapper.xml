@@ -6,7 +6,7 @@
 <mapper namespace="com.earth.ureverse.global.auth.mapper.AuthMapper">
 
     <select id="findByEmail" resultType="com.earth.ureverse.global.auth.dto.db.AuthenticatedUser">
-        SELECT USER_ID AS USERID, EMAIL, PASSWORD, ROLE
+        SELECT USER_ID AS USERID, EMAIL, PASSWORD, ROLE, ISACTIVE
         FROM USERS
         WHERE EMAIL = #{email}
     </select>
