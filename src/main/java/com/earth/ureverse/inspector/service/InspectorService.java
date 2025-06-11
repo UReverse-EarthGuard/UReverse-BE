@@ -1,4 +1,10 @@
 package com.earth.ureverse.inspector.service;
 
-public class InspectorService {
+import com.earth.ureverse.inspector.dto.response.PendingInspectionProductDto;
+
+import java.util.List;
+
+public interface InspectorService {
+    List<PendingInspectionProductDto> getPendingInspectionProductsByInspector(Long inspectorId);
+
 }
