@@ -89,4 +89,31 @@
 
     </select>
 
+    <select id="getPickupProducts" resultType="com.earth.ureverse.admin.dto.response.PickupProductResponse">
+        SELECT
+        p.product_id AS id,
+        (
+        SELECT pi.url
+        FROM product_image pi
+        WHERE pi.product_id = p.product_id
+        AND ROWNUM = 1
+        ) AS image,
+        b.name AS brand,
+        c.name AS category,
+        p.grade AS grade,
+        p.paid_point AS paid_point,
+        p.status AS status,
+        TO_CHAR(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') AS updatedAt
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        WHERE p.status = 'REGISTER'
+            OR p.status = 'FIRST_INSPECT'
+            OR p.status = 'SECOND_INSPECT'
+            OR p.status = 'DELIVERY_REQUEST'
+            OR p.status = 'DELIVERING'
+            OR p.status = 'FINISH'
+        ORDER BY p.updated_at DESC
+    </select>
+
 </mapper>
