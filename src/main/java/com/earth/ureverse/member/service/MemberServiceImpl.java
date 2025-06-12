@@ -5,6 +5,7 @@ import com.earth.ureverse.global.auth.mapper.AuthMapper;
 import com.earth.ureverse.global.common.exception.AlreadyWithdrawnException;
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.PasswordMismatchException;
+import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.mapper.MemberMapper;
@@ -59,6 +60,23 @@ public class MemberServiceImpl implements MemberService {
         }
 
         memberMapper.updateMember(userId, updateMemberRequestDto);
+    }
+
+    @Override
+    public void changePassword(Long userId, ChangePasswordRequestDto changePasswordRequestDto) {
+        AuthenticatedUser authenticatedUser = authMapper.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (!"active".equalsIgnoreCase(authenticatedUser.getIsActive())) {
+            throw new AlreadyWithdrawnException();
+        }
+
+        if (!passwordEncoder.matches(changePasswordRequestDto.getCurrentPassword(), authenticatedUser.getPassword())) {
+            throw new PasswordMismatchException();
+        }
+
+        String encodedPassword = passwordEncoder.encode(changePasswordRequestDto.getNewPassword());
+        memberMapper.updatePassword(userId, encodedPassword);
     }
 
 }

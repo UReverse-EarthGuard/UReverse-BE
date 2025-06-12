@@ -2,6 +2,7 @@ package com.earth.ureverse.member.controller;
 
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
+import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.service.MemberService;
@@ -46,6 +47,15 @@ public class MemberController {
             @Valid @RequestBody UpdateMemberRequestDto updateMemberRequestDto
     ) {
         memberService.updateMember(customUserDetails.getUserId(), updateMemberRequestDto);
+        return CommonResponseEntity.success(null);
+    }
+
+    @PatchMapping("/password")
+    public CommonResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @Valid @RequestBody ChangePasswordRequestDto changePasswordRequestDto
+    ) {
+        memberService.changePassword(customUserDetails.getUserId(), changePasswordRequestDto);
         return CommonResponseEntity.success(null);
     }
 

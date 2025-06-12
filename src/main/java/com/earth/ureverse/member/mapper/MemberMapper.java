@@ -12,4 +12,6 @@ public interface MemberMapper {
     void updateMember(@Param("userId") Long userId,
                       @Param("updateMemberRequestDto") UpdateMemberRequestDto updateMemberRequestDto);
 
+    void updatePassword(@Param("userId") Long userId, @Param("encodedPassword") String encodedPassword);
+
 }
