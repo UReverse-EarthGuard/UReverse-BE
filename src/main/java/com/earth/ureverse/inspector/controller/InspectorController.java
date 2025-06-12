@@ -2,17 +2,18 @@ package com.earth.ureverse.inspector.controller;
 
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
-import com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto;
-import com.earth.ureverse.inspector.dto.response.PendingInspectionProductDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
+import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
+import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 import com.earth.ureverse.inspector.service.InspectorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,23 +25,14 @@ public class InspectorController {
 
     private final InspectorService inspectorService;
 
-    // 상품 검수 필요 상품 목록 조회
-    @GetMapping("/pending-inspection")
-    public ResponseEntity<CommonResponseEntity<Object>> getPendingInspectionProducts(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        List<PendingInspectionProductDto> result =
-                inspectorService.getPendingInspectionProductsByInspector(userDetails.getUserId());
-        return ResponseEntity.ok(CommonResponseEntity.success(result));
-    }
-
-    // 검수 완료된 상품 목록 조회
-    @GetMapping("/completed-products")
-    public ResponseEntity<CommonResponseEntity<Object>> getInspectionCompletedProducts(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        List<InspectionCompletedProductDto> result =
-                inspectorService.getInspectionCompletedProductsByInspector(userDetails.getUserId());
+    @GetMapping("/products/search")
+    public ResponseEntity<CommonResponseEntity<Object>> searchProductsByInspector(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            ProductSearchRequestDto requestDto
+    ) {
+        List<ProductSearchResultDto> result = inspectorService.searchProducts(
+                userDetails.getUserId(), requestDto
+        );
         return ResponseEntity.ok(CommonResponseEntity.success(result));
     }
 

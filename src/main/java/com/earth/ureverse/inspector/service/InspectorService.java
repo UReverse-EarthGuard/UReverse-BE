@@ -1,15 +1,14 @@
 package com.earth.ureverse.inspector.service;
 
-import com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto;
-import com.earth.ureverse.inspector.dto.response.PendingInspectionProductDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
+import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
+import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 
 import java.util.List;
 
 public interface InspectorService {
-    List<PendingInspectionProductDto> getPendingInspectionProductsByInspector(Long inspectorId);
-
-    List<InspectionCompletedProductDto> getInspectionCompletedProductsByInspector(Long inspectorId);
 
     ProductInspectionDetailDto getPendingProductDetail(Long productId);
+
+    List<ProductSearchResultDto> searchProducts(Long userId, ProductSearchRequestDto requestDto);
 }
