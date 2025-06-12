@@ -1,5 +1,6 @@
 package com.earth.ureverse.admin.controller;
 
+import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.response.FinishProductResponse;
 import com.earth.ureverse.admin.dto.response.PickupProductResponse;
@@ -22,12 +23,16 @@ public class AdminController {
     private final AdminProductService adminProductService;
 
     @GetMapping("/products/finish")
-    public CommonResponseEntity<PaginationResponse<FinishProductResponse>> getFinishProducts(@RequestBody ProductSearchRequest request) {
+    public CommonResponseEntity<PaginationResponse<FinishProductResponse>> getFinishProducts(
+            @RequestBody ProductSearchRequest request
+    ) {
         return CommonResponseEntity.success(adminProductService.getFinishProducts(request));
     }
 
     @GetMapping("/products/pickup")
-    public CommonResponseEntity<List<PickupProductResponse>> getPickupProducts() {
-        return CommonResponseEntity.success(adminProductService.getPickupProducts());
+    public CommonResponseEntity<PaginationResponse<PickupProductResponse>> getPickupProducts(
+            @RequestBody PickupSearchRequest request
+    ) {
+        return CommonResponseEntity.success(adminProductService.getPickupProducts(request));
     }
 }

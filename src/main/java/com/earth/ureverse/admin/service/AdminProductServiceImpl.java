@@ -1,5 +1,6 @@
 package com.earth.ureverse.admin.service;
 
+import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.response.FinishProductResponse;
 import com.earth.ureverse.admin.dto.response.PickupProductResponse;
@@ -24,7 +25,9 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
-    public List<PickupProductResponse> getPickupProducts() {
-        return productMapper.getPickupProducts();
+    public PaginationResponse<PickupProductResponse> getPickupProducts(PickupSearchRequest request) {
+        List<PickupProductResponse> items = productMapper.getPickupProducts(request);
+        long total = productMapper.countPickupProducts(request);
+        return new PaginationResponse<>(items, total);
     }
 }
