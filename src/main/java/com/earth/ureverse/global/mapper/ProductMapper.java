@@ -3,6 +3,7 @@ package com.earth.ureverse.global.mapper;
 import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.response.FinishProductResponse;
+import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 import com.earth.ureverse.admin.dto.response.PickupProductResponse;
 import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
@@ -38,4 +39,10 @@ public interface ProductMapper {
     List<String> getProductImages(Long productId);
 
     ProductInspectionDetailDto getPendingProductDetail(@Param("productId") Long productId);
+
+    ProductInspectedDetailDto getInspectedProductDetail(@Param("productId") Long productId);
+
+    boolean existsByProductId(@Param("productId") Long productId);
+
+    String getProductStatus(@Param("productId") Long productId);
 }

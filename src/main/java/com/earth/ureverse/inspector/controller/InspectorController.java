@@ -2,6 +2,7 @@ package com.earth.ureverse.inspector.controller;
 
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
+import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
@@ -49,6 +50,14 @@ public class InspectorController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(CommonResponseEntity.error(HttpStatus.NOT_FOUND, e.getMessage()));
         }
+    }
+
+    // 검수 완료된 상품 상세 조회
+    @GetMapping("/products/{productId}/inspected")
+    public ResponseEntity<CommonResponseEntity<Object>> getInspectedProductDetail(
+            @PathVariable Long productId) {
+        ProductInspectedDetailDto detail = inspectorService.getInspectedProductDetail(productId);
+        return ResponseEntity.ok(CommonResponseEntity.success(detail));
     }
 
 }

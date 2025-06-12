@@ -1,20 +1,24 @@
 package com.earth.ureverse.inspector.service;
 
+import com.earth.ureverse.global.common.exception.NotFoundException;
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.global.util.ProductValidator;
+import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@RequiredArgsConstructor
 @Service
 public class InspectorServiceImpl implements InspectorService{
 
-    @Autowired
-    private ProductMapper productMapper;
+    private final ProductMapper productMapper;
+    private final ProductValidator productValidator;
 
     @Override
     public List<ProductSearchResultDto> searchProducts(Long inspectorId, ProductSearchRequestDto dto) {
@@ -41,4 +45,16 @@ public class InspectorServiceImpl implements InspectorService{
         return detail;
     }
 
+    @Override
+    public ProductInspectedDetailDto getInspectedProductDetail(Long productId) {
+        // 상품 확인
+        productValidator.validateProductExists(productId);
+        productValidator.validateProductSecondInspected(productId);
+
+        ProductInspectedDetailDto dto = productMapper.getInspectedProductDetail(productId);
+        if (dto == null) {
+            throw new NotFoundException("검수 완료된 상품을 찾을 수 없습니다: productId = " + productId);
+        }
+        return dto;
+    }
 }
