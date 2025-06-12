@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/inspectors")
@@ -46,9 +47,16 @@ public class InspectorController {
     // 검수 필요 상품 상세 조회
     @GetMapping("/products/{productId}/pending")
     public ResponseEntity<CommonResponseEntity<Object>> getPendingProductDetail(
-            @PathVariable("productId") Long productId) {
-        ProductInspectionDetailDto detail = inspectorService.getPendingProductDetail(productId);
-        return ResponseEntity.ok(CommonResponseEntity.success(detail));
+            @PathVariable Long productId
+    ) {
+        try {
+            ProductInspectionDetailDto dto = inspectorService.getPendingProductDetail(productId);
+            return ResponseEntity.ok(CommonResponseEntity.success(dto));
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(CommonResponseEntity.error(HttpStatus.NOT_FOUND, e.getMessage()));
+        }
     }
 
 }

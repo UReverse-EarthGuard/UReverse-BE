@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class InspectorServiceImpl implements InspectorService{
@@ -27,7 +28,11 @@ public class InspectorServiceImpl implements InspectorService{
 
     @Override
     public ProductInspectionDetailDto getPendingProductDetail(Long productId) {
-        return productMapper.getPendingProductDetail(productId);
+        ProductInspectionDetailDto detail = productMapper.getPendingProductDetail(productId);
+        if (detail == null) {
+            throw new NoSuchElementException("해당 상품이 존재하지 않습니다: productId = " + productId);
+        }
+        return detail;
     }
 
 }
