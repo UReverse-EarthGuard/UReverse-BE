@@ -1,6 +1,7 @@
 package com.earth.ureverse.global.mapper;
 
 import com.earth.ureverse.admin.dto.response.FinishProductResponse;
+import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 import com.earth.ureverse.admin.dto.response.PickupProductResponse;
 import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
 import com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto;
@@ -13,11 +14,15 @@ import java.util.List;
 @Mapper
 public interface ProductMapper {
 
-    List<PendingInspectionProductDto> getPendingInspectionProductsByInspector(@Param("inspectorId") Long inspectorId);
-
     List<FinishProductResponse> getFinishProducts();
 
-    List<InspectionCompletedProductDto> getInspectionCompletedProductsByInspector(@Param("inspectorId") Long inspectorId);
+    List<ProductSearchResultDto> getPendingInspectionProductsByInspectorAndKeyword(
+            @Param("inspectorId") Long inspectorId, @Param("keyword") String keyword, @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
+
+    List<ProductSearchResultDto> getInspectionCompletedProductsByInspectorAndKeyword(
+            @Param("inspectorId") Long inspectorId, @Param("keyword") String keyword, @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
 
     List<PickupProductResponse> getPickupProducts();
 
