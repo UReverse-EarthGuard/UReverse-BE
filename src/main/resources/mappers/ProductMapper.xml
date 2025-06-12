@@ -119,27 +119,31 @@
         img2.url                  AS "product.image2",
         img3.url                  AS "product.image3",
         b.name                    AS "product.brand",
-        c.name                    AS "product.category",
+        c.main_name               AS "product.category_main",
+        c.sub_name                AS "product.category_sub",
         p.paid_point              AS "product.paid_point",
         bcc.point                 AS "product.expect_point",
         u.email                   AS "product.userEmail",
         p.status                  AS "product.status",
         TO_CHAR(p.updated_at, 'YYYY-MM-DD') AS "product.updatedAt",
 
-        aiins.inspector_id        AS "aiResult.inspectorEmail",
-        DECODE(aiins.tear, 'Y', 1, 0)        AS "aiResult.tear",
-        DECODE(aiins.stain, 'Y', 1, 0)       AS "aiResult.stain",
-        DECODE(aiins.fading, 'Y', 1, 0)      AS "aiResult.fading",
-        DECODE(aiins.stretching, 'Y', 1, 0)  AS "aiResult.stretching",
-        aiins.notes               AS "aiResult.comment",
+        -- AI 검사 결과
+        inspectorUser.email       AS "aiResult.inspectorEmail",
+        DECODE(aiins.is_torn, 'Y', 1, 0)        AS "aiResult.isTorn",
+        DECODE(aiins.has_stain, 'Y', 1, 0)       AS "aiResult.hasStain",
+        DECODE(aiins.has_fading, 'Y', 1, 0)      AS "aiResult.hasFading",
+        DECODE(aiins.is_stretched, 'Y', 1, 0)  AS "aiResult.isStretched",
+        aiins.notes               AS "aiResult.note",
 
-        huins.inspector_id        AS "inspectorResult.inspectorEmail",
-        DECODE(huins.tear, 'Y', 1, 0)        AS "inspectorResult.tear",
-        DECODE(huins.stain, 'Y', 1, 0)       AS "inspectorResult.stain",
-        DECODE(huins.fading, 'Y', 1, 0)      AS "inspectorResult.fading",
-        DECODE(huins.stretching, 'Y', 1, 0)  AS "inspectorResult.stretching",
-        huins.notes               AS "inspectorResult.comment",
+        -- Human 검사 결과
+        inspectorUser.email     AS "inspectorResult.inspectorEmail",
+        DECODE(huins.is_torn, 'Y', 1, 0)        AS "inspectorResult.isTorn",
+        DECODE(huins.has_stain, 'Y', 1, 0)       AS "inspectorResult.hasStain",
+        DECODE(huins.has_fading, 'Y', 1, 0)      AS "inspectorResult.hasFading",
+        DECODE(huins.is_stretched, 'Y', 1, 0)  AS "inspectorResult.isStretched",
+        huins.notes               AS "inspectorResult.note",
 
+        -- 최종 grade
         p.grade                   AS grade
 
         FROM product p
@@ -149,6 +153,7 @@
         LEFT JOIN brand_category_combination bcc
         ON p.brand_id = bcc.brand_id AND p.category_id = bcc.category_id
 
+        -- 이미지 조인 (1~3번째)
         LEFT JOIN (
         SELECT * FROM (
         SELECT product_id, url,
@@ -175,6 +180,7 @@
 
         LEFT JOIN inspection aiins ON aiins.product_id = p.product_id AND aiins.inspect_method = 'AI'
         LEFT JOIN inspection huins ON huins.product_id = p.product_id AND huins.inspect_method = 'Human'
+        LEFT JOIN users inspectorUser ON bcc.inspector_id = inspectorUser.user_id
 
         WHERE p.status = 'FINISH'
         AND p.product_id = #{productId}

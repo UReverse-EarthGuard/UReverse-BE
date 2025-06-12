@@ -15,7 +15,8 @@ public class ProductDetailResponse {
     private String image2;
     private String image3;
     private String brand; //브랜드명
-    private String category; //카테고리명
+    private String category_main; //카테고리 Main
+    private String category_sub; //카테고리 Sub
     private Integer paid_point;
     private Integer expect_point;
     private String userEmail;

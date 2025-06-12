@@ -11,9 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InspectionResultResponse {
     private String inspectorEmail;
-    private Boolean tear;
-    private Boolean stain;
-    private Boolean fading;
-    private Boolean stretching;
-    private String comment;
+    private Boolean isTorn;
+    private Boolean hasStain;
+    private Boolean hasFading;
+    private Boolean isStretched;
+    private String note;
 }
