@@ -1,6 +1,7 @@
 package com.earth.ureverse.admin.controller;
 
 import com.earth.ureverse.admin.dto.response.FinishProductResponse;
+import com.earth.ureverse.admin.dto.response.PickupProductResponse;
 import com.earth.ureverse.admin.service.AdminProductService;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,10 @@ public class AdminController {
     @GetMapping("/products/finish")
     public CommonResponseEntity<List<FinishProductResponse>> getFinishProducts() {
         return CommonResponseEntity.success(adminProductService.getFinishProducts());
+    }
+
+    @GetMapping("/products/pickup")
+    public CommonResponseEntity<List<PickupProductResponse>> getPickupProducts() {
+        return CommonResponseEntity.success(adminProductService.getPickupProducts());
     }
 }
