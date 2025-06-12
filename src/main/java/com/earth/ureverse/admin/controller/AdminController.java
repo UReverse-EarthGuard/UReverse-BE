@@ -1,11 +1,18 @@
 package com.earth.ureverse.admin.controller;
 
+import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
+import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.response.FinishProductResponse;
 import com.earth.ureverse.admin.dto.response.PickupProductResponse;
 import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
 import com.earth.ureverse.admin.service.AdminProductService;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
+import com.earth.ureverse.global.common.response.PaginationResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,13 +25,17 @@ public class AdminController {
     private final AdminProductService adminProductService;
 
     @GetMapping("/products/finish")
-    public CommonResponseEntity<List<FinishProductResponse>> getFinishProducts() {
-        return CommonResponseEntity.success(adminProductService.getFinishProducts());
+    public CommonResponseEntity<PaginationResponse<FinishProductResponse>> getFinishProducts(
+            @RequestBody ProductSearchRequest request
+    ) {
+        return CommonResponseEntity.success(adminProductService.getFinishProducts(request));
     }
 
     @GetMapping("/products/pickup")
-    public CommonResponseEntity<List<PickupProductResponse>> getPickupProducts() {
-        return CommonResponseEntity.success(adminProductService.getPickupProducts());
+    public CommonResponseEntity<PaginationResponse<PickupProductResponse>> getPickupProducts(
+            @RequestBody PickupSearchRequest request
+    ) {
+        return CommonResponseEntity.success(adminProductService.getPickupProducts(request));
     }
 
     @GetMapping("/products/finish/{productId}")
