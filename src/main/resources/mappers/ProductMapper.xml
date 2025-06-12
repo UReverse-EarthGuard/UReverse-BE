@@ -55,6 +55,8 @@
             AND (LOWER(c.name) LIKE '%' || LOWER(#{keyword}) || '%'
             OR LOWER(b.name) LIKE '%' || LOWER(#{keyword}) || '%')
         </if>
+        ORDER BY p.created_at DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 
     </select>
 
@@ -88,6 +90,8 @@
             AND (LOWER(c.name) LIKE '%' || LOWER(#{keyword}) || '%'
             OR LOWER(b.name) LIKE '%' || LOWER(#{keyword}) || '%')
         </if>
+        ORDER BY p.created_at DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{pageSize} ROWS ONLY
 
     </select>
 

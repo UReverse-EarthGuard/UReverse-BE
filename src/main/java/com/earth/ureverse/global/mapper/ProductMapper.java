@@ -13,9 +13,13 @@ public interface ProductMapper {
 
     List<FinishProductResponse> getFinishProducts();
 
-    List<ProductSearchResultDto> getPendingInspectionProductsByInspectorAndKeyword(@Param("inspectorId") Long inspectorId, @Param("keyword") String keyword);
+    List<ProductSearchResultDto> getPendingInspectionProductsByInspectorAndKeyword(
+            @Param("inspectorId") Long inspectorId, @Param("keyword") String keyword, @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
 
-    List<ProductSearchResultDto> getInspectionCompletedProductsByInspectorAndKeyword(@Param("inspectorId") Long inspectorId, @Param("keyword") String keyword);
+    List<ProductSearchResultDto> getInspectionCompletedProductsByInspectorAndKeyword(
+            @Param("inspectorId") Long inspectorId, @Param("keyword") String keyword, @Param("offset") int offset,
+            @Param("pageSize") int pageSize);
 
     List<PickupProductResponse> getPickupProducts();
 }

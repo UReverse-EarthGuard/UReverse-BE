@@ -16,11 +16,17 @@ public class InspectorServiceImpl implements InspectorService{
 
     @Override
     public List<ProductSearchResultDto> searchProducts(Long inspectorId, ProductSearchRequestDto dto) {
-        System.out.println((dto.isInspected()?"true":"false")+" "+dto.getKeyword());
+
+        int pageNum = dto.getPageNum() != null ? dto.getPageNum() : 1;
+        int pageSize = dto.getPageSize() != null ? dto.getPageSize() : 6;
+        int offset = (pageNum - 1) * pageSize;
+
         if (dto.isInspected()) {
-            return productMapper.getInspectionCompletedProductsByInspectorAndKeyword(inspectorId, dto.getKeyword());
+            return productMapper
+                    .getInspectionCompletedProductsByInspectorAndKeyword(inspectorId, dto.getKeyword(), offset, pageSize);
         } else {
-            return productMapper.getPendingInspectionProductsByInspectorAndKeyword(inspectorId, dto.getKeyword());
+            return productMapper
+                    .getPendingInspectionProductsByInspectorAndKeyword(inspectorId, dto.getKeyword(), offset, pageSize);
         }
     }
 
