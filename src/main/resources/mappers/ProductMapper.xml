@@ -123,23 +123,6 @@
         ORDER BY p.updated_at DESC
     </select>
 
-    <!-- 수거완료된 상품 상세 정보  -->
-    <resultMap id="ProductDetailMap" type="com.earth.ureverse.admin.dto.response.ProductDetailResponse">
-        <result property="id" column="product_id"/>
-        <result property="brand" column="brand"/>
-        <result property="category_main" column="category_main"/>
-        <result property="category_sub" column="category_sub"/>
-        <result property="paid_point" column="paid_point"/>
-        <result property="expect_point" column="expect_point"/>
-        <result property="userEmail" column="user_email"/>
-        <result property="status" column="status"/>
-        <result property="updatedAt" column="updated_at"/>
-
-        <collection property="images" ofType="string">
-            <result column="image_url"/>
-        </collection>
-    </resultMap>
-
     <!-- 상품 이미지 목록   -->
     <select id="getProductImages"
             parameterType="long"
