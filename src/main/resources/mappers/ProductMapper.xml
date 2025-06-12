@@ -110,4 +110,75 @@
         ORDER BY p.updated_at DESC
     </select>
 
+    <select id="getFinishProductDetail"
+            parameterType="long"
+            resultType="com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse">
+        SELECT
+        p.product_id              AS "product.id",
+        img1.url                  AS "product.image1",
+        img2.url                  AS "product.image2",
+        img3.url                  AS "product.image3",
+        b.name                    AS "product.brand",
+        c.name                    AS "product.category",
+        p.paid_point              AS "product.paid_point",
+        bcc.point                 AS "product.expect_point",
+        u.email                   AS "product.userEmail",
+        p.status                  AS "product.status",
+        TO_CHAR(p.updated_at, 'YYYY-MM-DD') AS "product.updatedAt",
+
+        aiins.inspector_id        AS "aiResult.inspectorEmail",
+        DECODE(aiins.tear, 'Y', 1, 0)        AS "aiResult.tear",
+        DECODE(aiins.stain, 'Y', 1, 0)       AS "aiResult.stain",
+        DECODE(aiins.fading, 'Y', 1, 0)      AS "aiResult.fading",
+        DECODE(aiins.stretching, 'Y', 1, 0)  AS "aiResult.stretching",
+        aiins.notes               AS "aiResult.comment",
+
+        huins.inspector_id        AS "inspectorResult.inspectorEmail",
+        DECODE(huins.tear, 'Y', 1, 0)        AS "inspectorResult.tear",
+        DECODE(huins.stain, 'Y', 1, 0)       AS "inspectorResult.stain",
+        DECODE(huins.fading, 'Y', 1, 0)      AS "inspectorResult.fading",
+        DECODE(huins.stretching, 'Y', 1, 0)  AS "inspectorResult.stretching",
+        huins.notes               AS "inspectorResult.comment",
+
+        p.grade                   AS grade
+
+        FROM product p
+        JOIN users u ON p.user_id = u.user_id
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        LEFT JOIN brand_category_combination bcc
+        ON p.brand_id = bcc.brand_id AND p.category_id = bcc.category_id
+
+        LEFT JOIN (
+        SELECT * FROM (
+        SELECT product_id, url,
+        ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY image_id) AS rn
+        FROM product_image
+        ) WHERE rn = 1
+        ) img1 ON img1.product_id = p.product_id
+
+        LEFT JOIN (
+        SELECT * FROM (
+        SELECT product_id, url,
+        ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY image_id) AS rn
+        FROM product_image
+        ) WHERE rn = 2
+        ) img2 ON img2.product_id = p.product_id
+
+        LEFT JOIN (
+        SELECT * FROM (
+        SELECT product_id, url,
+        ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY image_id) AS rn
+        FROM product_image
+        ) WHERE rn = 3
+        ) img3 ON img3.product_id = p.product_id
+
+        LEFT JOIN inspection aiins ON aiins.product_id = p.product_id AND aiins.inspect_method = 'AI'
+        LEFT JOIN inspection huins ON huins.product_id = p.product_id AND huins.inspect_method = 'Human'
+
+        WHERE p.status = 'FINISH'
+        AND p.product_id = #{productId}
+    </select>
+
+
 </mapper>
