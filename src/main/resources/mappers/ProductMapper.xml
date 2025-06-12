@@ -268,19 +268,6 @@
     </select>
 
 
-    <!-- 검사 결과 매핑 -->
-    <resultMap id="InspectionResultMap" type="com.earth.ureverse.inspector.dto.response.InspectionResultDto">
-        <result property="result" column="result"/>
-        <result property="notes" column="notes"/>
-        <result property="inspectMethod" column="inspect_method"/>
-        <result property="isTorn" column="is_torn"/>
-        <result property="hasStain" column="has_stain"/>
-        <result property="hasFading" column="has_fading"/>
-        <result property="isStretched" column="is_stretched"/>
-        <result property="otherDefect" column="other_defect"/>
-        <result property="createdAt" column="created_at"/>
-    </resultMap>
-
     <!-- 상품 상세 응답 매핑 -->
     <resultMap id="ProductInspectionDetailMap" type="com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto">
         <result property="productId" column="product_id"/>
@@ -338,6 +325,85 @@
         FETCH FIRST 1 ROWS ONLY
     </select>
 
+    <!-- AI, HUMAN 검사 결과 DTO 매핑 -->
+    <resultMap id="InspectionResultMap" type="com.earth.ureverse.inspector.dto.response.InspectionResultDto">
+        <result property="result" column="result"/>
+        <result property="notes" column="notes"/>
+        <result property="inspectMethod" column="inspect_method"/>
+        <result property="isTorn" column="is_torn"/>
+        <result property="hasStain" column="has_stain"/>
+        <result property="hasFading" column="has_fading"/>
+        <result property="isStretched" column="is_stretched"/>
+        <result property="otherDefect" column="other_defect"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
 
+    <!-- 검수 완료 상품 상세 응답 DTO 매핑 -->
+    <resultMap id="ProductInspectedDetailMap" type="com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto">
+        <result property="productId" column="product_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="categoryMain" column="category_main"/>
+        <result property="categorySub" column="category_sub"/>
+        <result property="expectedPoint" column="expected_point"/>
+        <result property="paidPoint" column="paid_point"/>
+        <result property="inspectedAt" column="human_created_at"/>
+
+        <association property="aiInspection" javaType="com.earth.ureverse.inspector.dto.response.InspectionResultDto"
+                     select="getInspectionResult"
+                     column="product_id"/>
+        <association property="humanInspection" javaType="com.earth.ureverse.inspector.dto.response.InspectionResultDto"
+                     select="getHumanInspectionResult"
+                     column="product_id"/>
+        <collection property="imageUrls" ofType="string">
+            <result column="image_url"/>
+        </collection>
+    </resultMap>
+
+    <!-- Inspected 상세 조회 -->
+    <select id="getInspectedProductDetail" resultMap="ProductInspectedDetailMap">
+        SELECT
+        p.product_id,
+        b.name AS brand_name,
+        c.main_name AS category_main,
+        c.sub_name AS category_sub,
+        combi.point AS expected_point,
+        p.paid_point,
+        TO_CHAR(hi.created_at, 'YYYY-MM-DD HH24:MI:SS') AS human_created_at,
+        pi.url AS image_url
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        JOIN brand_category_combination combi
+        ON p.brand_id = combi.brand_id AND p.category_id = combi.category_id
+        LEFT JOIN inspection hi
+        ON p.product_id = hi.product_id AND hi.inspect_method = 'Human'
+        LEFT JOIN product_image pi
+        ON p.product_id = pi.product_id
+        WHERE p.product_id = #{productId}
+        AND hi.inspection_id IS NOT NULL
+    </select>
+
+    <!-- 공통 검사 결과 조회 (HUMAN) -->
+    <select id="getHumanInspectionResult" resultMap="InspectionResultMap" parameterType="long">
+        SELECT *
+        FROM inspection
+        WHERE product_id = #{productId}
+        AND inspect_method = 'Human'
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- productId 에 해당하는 상품 존재하는지 확인 -->
+    <select id="existsByProductId" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM product
+        WHERE product_id = #{productId}
+    </select>
+
+    <!-- 상품 상태 조회 -->
+    <select id="getProductStatus" resultType="string">
+        SELECT status
+        FROM product
+        WHERE product_id = #{productId}
+    </select>
 
 </mapper>
