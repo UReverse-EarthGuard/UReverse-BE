@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class InspectionCompletedProductDto {
+public class ProductSearchResultDto {
     private Long productId;
     private String brandName;
     private String categoryName;

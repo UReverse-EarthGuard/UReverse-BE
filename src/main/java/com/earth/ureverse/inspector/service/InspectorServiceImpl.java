@@ -1,8 +1,8 @@
 package com.earth.ureverse.inspector.service;
 
 import com.earth.ureverse.global.mapper.ProductMapper;
-import com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto;
-import com.earth.ureverse.inspector.dto.response.PendingInspectionProductDto;
+import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
+import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +15,19 @@ public class InspectorServiceImpl implements InspectorService{
     private ProductMapper productMapper;
 
     @Override
-    public List<PendingInspectionProductDto> getPendingInspectionProductsByInspector(Long inspectorId) {
-        return productMapper.getPendingInspectionProductsByInspector(inspectorId);
+    public List<ProductSearchResultDto> searchProducts(Long inspectorId, ProductSearchRequestDto dto) {
+
+        int pageNum = dto.getPageNum() != null ? dto.getPageNum() : 1;
+        int pageSize = dto.getPageSize() != null ? dto.getPageSize() : 6;
+        int offset = (pageNum - 1) * pageSize;
+
+        if (dto.isInspected()) {
+            return productMapper
+                    .getInspectionCompletedProductsByInspectorAndKeyword(inspectorId, dto.getKeyword(), offset, pageSize);
+        } else {
+            return productMapper
+                    .getPendingInspectionProductsByInspectorAndKeyword(inspectorId, dto.getKeyword(), offset, pageSize);
+        }
     }
 
-    @Override
-    public List<InspectionCompletedProductDto> getInspectionCompletedProductsByInspector(Long inspectorId) {
-        return productMapper.getInspectionCompletedProductsByInspector(inspectorId);
-    }
 }
