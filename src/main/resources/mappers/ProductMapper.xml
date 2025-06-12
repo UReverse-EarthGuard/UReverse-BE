@@ -123,19 +123,44 @@
         ORDER BY p.updated_at DESC
     </select>
 
+    <!-- 수거완료된 상품 상세 정보  -->
+    <resultMap id="ProductDetailMap" type="com.earth.ureverse.admin.dto.response.ProductDetailResponse">
+        <result property="id" column="product_id"/>
+        <result property="brand" column="brand"/>
+        <result property="category_main" column="category_main"/>
+        <result property="category_sub" column="category_sub"/>
+        <result property="paid_point" column="paid_point"/>
+        <result property="expect_point" column="expect_point"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="status" column="status"/>
+        <result property="updatedAt" column="updated_at"/>
+
+        <collection property="images" ofType="string">
+            <result column="image_url"/>
+        </collection>
+    </resultMap>
+
+    <!-- 상품 이미지 목록   -->
+    <select id="getProductImages"
+            parameterType="long"
+            resultType="string">
+        SELECT url
+        FROM product_image
+        WHERE product_id = #{productId}
+        ORDER BY image_id
+    </select>
+
+    <!-- 수거 완료된 상품 상세 정보   -->
     <select id="getFinishProductDetail"
             parameterType="long"
             resultType="com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse">
         SELECT
         p.product_id              AS "product.id",
-        img1.url                  AS "product.image1",
-        img2.url                  AS "product.image2",
-        img3.url                  AS "product.image3",
         b.name                    AS "product.brand",
-        c.main_name               AS "product.category_main",
-        c.sub_name                AS "product.category_sub",
-        p.paid_point              AS "product.paid_point",
-        bcc.point                 AS "product.expect_point",
+        c.main_name               AS "product.categoryMain",
+        c.sub_name                AS "product.categorySub",
+        p.paid_point              AS "product.paidPoint",
+        bcc.point                 AS "product.expectPoint",
         u.email                   AS "product.userEmail",
         p.status                  AS "product.status",
         TO_CHAR(p.updated_at, 'YYYY-MM-DD') AS "product.updatedAt",
@@ -165,32 +190,6 @@
         JOIN category c ON p.category_id = c.category_id
         LEFT JOIN brand_category_combination bcc
         ON p.brand_id = bcc.brand_id AND p.category_id = bcc.category_id
-
-        -- 이미지 조인 (1~3번째)
-        LEFT JOIN (
-        SELECT * FROM (
-        SELECT product_id, url,
-        ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY image_id) AS rn
-        FROM product_image
-        ) WHERE rn = 1
-        ) img1 ON img1.product_id = p.product_id
-
-        LEFT JOIN (
-        SELECT * FROM (
-        SELECT product_id, url,
-        ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY image_id) AS rn
-        FROM product_image
-        ) WHERE rn = 2
-        ) img2 ON img2.product_id = p.product_id
-
-        LEFT JOIN (
-        SELECT * FROM (
-        SELECT product_id, url,
-        ROW_NUMBER() OVER (PARTITION BY product_id ORDER BY image_id) AS rn
-        FROM product_image
-        ) WHERE rn = 3
-        ) img3 ON img3.product_id = p.product_id
-
         LEFT JOIN inspection aiins ON aiins.product_id = p.product_id AND aiins.inspect_method = 'AI'
         LEFT JOIN inspection huins ON huins.product_id = p.product_id AND huins.inspect_method = 'Human'
         LEFT JOIN users inspectorUser ON bcc.inspector_id = inspectorUser.user_id

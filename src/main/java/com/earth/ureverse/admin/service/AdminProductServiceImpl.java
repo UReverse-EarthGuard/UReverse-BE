@@ -27,6 +27,11 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     @Override
     public ProductInspectionResultResponse getFinishProductDetail(Long productId) {
-        return productMapper.getFinishProductDetail(productId);
+        ProductInspectionResultResponse result = productMapper.getFinishProductDetail(productId);
+        List<String> images = productMapper.getProductImages(productId);
+        if (result != null && result.getProduct() != null) {
+            result.getProduct().setImages(images);
+        }
+        return result;
     }
 }
