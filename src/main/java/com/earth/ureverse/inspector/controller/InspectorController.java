@@ -4,6 +4,7 @@ import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto;
 import com.earth.ureverse.inspector.dto.response.PendingInspectionProductDto;
+import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import com.earth.ureverse.inspector.service.InspectorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,4 +42,13 @@ public class InspectorController {
                 inspectorService.getInspectionCompletedProductsByInspector(userDetails.getUserId());
         return ResponseEntity.ok(CommonResponseEntity.success(result));
     }
+
+    // 검수 필요 상품 상세 조회
+    @GetMapping("/products/{productId}/pending")
+    public ResponseEntity<CommonResponseEntity<Object>> getPendingProductDetail(
+            @PathVariable("productId") Long productId) {
+        ProductInspectionDetailDto detail = inspectorService.getPendingProductDetail(productId);
+        return ResponseEntity.ok(CommonResponseEntity.success(detail));
+    }
+
 }

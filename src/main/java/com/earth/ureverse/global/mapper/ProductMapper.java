@@ -4,6 +4,7 @@ import com.earth.ureverse.admin.dto.response.FinishProductResponse;
 import com.earth.ureverse.admin.dto.response.PickupProductResponse;
 import com.earth.ureverse.inspector.dto.response.InspectionCompletedProductDto;
 import com.earth.ureverse.inspector.dto.response.PendingInspectionProductDto;
+import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +20,6 @@ public interface ProductMapper {
     List<InspectionCompletedProductDto> getInspectionCompletedProductsByInspector(@Param("inspectorId") Long inspectorId);
 
     List<PickupProductResponse> getPickupProducts();
+
+    ProductInspectionDetailDto getPendingProductDetail(@Param("productId") Long productId);
 }
