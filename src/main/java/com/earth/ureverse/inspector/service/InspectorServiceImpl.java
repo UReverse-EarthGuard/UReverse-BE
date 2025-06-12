@@ -1,12 +1,14 @@
 package com.earth.ureverse.inspector.service;
 
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class InspectorServiceImpl implements InspectorService{
@@ -28,6 +30,15 @@ public class InspectorServiceImpl implements InspectorService{
             return productMapper
                     .getPendingInspectionProductsByInspectorAndKeyword(inspectorId, dto.getKeyword(), offset, pageSize);
         }
+    }
+
+    @Override
+    public ProductInspectionDetailDto getPendingProductDetail(Long productId) {
+        ProductInspectionDetailDto detail = productMapper.getPendingProductDetail(productId);
+        if (detail == null) {
+            throw new NoSuchElementException("해당 상품이 존재하지 않습니다: productId = " + productId);
+        }
+        return detail;
     }
 
 }

@@ -182,4 +182,75 @@
     </select>
 
 
+    <!-- 검사 결과 매핑 -->
+    <resultMap id="InspectionResultMap" type="com.earth.ureverse.inspector.dto.response.InspectionResultDto">
+        <result property="result" column="result"/>
+        <result property="notes" column="notes"/>
+        <result property="inspectMethod" column="inspect_method"/>
+        <result property="isTorn" column="is_torn"/>
+        <result property="hasStain" column="has_stain"/>
+        <result property="hasFading" column="has_fading"/>
+        <result property="isStretched" column="is_stretched"/>
+        <result property="otherDefect" column="other_defect"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 상품 상세 응답 매핑 -->
+    <resultMap id="ProductInspectionDetailMap" type="com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto">
+        <result property="productId" column="product_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="categoryMainName" column="category_main_name"/>
+        <result property="categorySubName" column="category_sub_name"/>
+        <result property="expectedPoint" column="expected_point"/>
+
+        <association
+                property="aiInspection"
+                javaType="com.earth.ureverse.inspector.dto.response.InspectionResultDto"
+                select="getInspectionResult"
+                column="product_id"/>
+
+        <collection property="imageUrls" ofType="string">
+            <result column="image_url"/>
+        </collection>
+    </resultMap>
+
+    <!-- 검수 필요 상품 상세 조회 -->
+    <select id="getPendingProductDetail" resultMap="ProductInspectionDetailMap">
+        SELECT
+        p.product_id,
+        p.user_id,
+        b.name AS brand_name,
+        c.main_name AS category_main_name,
+        c.sub_name AS category_sub_name,
+        combi.point AS expected_point,
+        pi.url AS image_url
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        JOIN brand_category_combination combi
+        ON p.brand_id = combi.brand_id AND p.category_id = combi.category_id
+        LEFT JOIN product_image pi ON p.product_id = pi.product_id
+        WHERE p.product_id = #{productId}
+    </select>
+
+    <!-- 검수 결과 조회 (method='AI') -->
+    <select id="getInspectionResult" resultMap="InspectionResultMap" parameterType="long">
+        SELECT
+        result,
+        notes,
+        inspect_method,
+        is_torn,
+        has_stain,
+        has_fading,
+        is_stretched,
+        other_defect,
+        created_at
+        FROM inspection
+        WHERE product_id = #{productId}
+        AND inspect_method = 'AI'
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
+
 </mapper>
