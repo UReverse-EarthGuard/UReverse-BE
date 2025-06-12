@@ -6,7 +6,9 @@
 <mapper namespace="com.earth.ureverse.global.mapper.ProductMapper">
 
     <!-- FINISH 상태 상품 목록 조회 -->
-    <select id="getFinishProducts" resultType="com.earth.ureverse.admin.dto.response.FinishProductResponse">
+    <select id="getFinishProducts"
+            parameterType="com.earth.ureverse.admin.dto.request.ProductSearchRequest"
+            resultType="com.earth.ureverse.admin.dto.response.FinishProductResponse">
         SELECT
             p.product_id AS id,
             (
@@ -16,13 +18,51 @@
             AND ROWNUM = 1
             ) AS image,
             b.name AS brand,
-            c.name AS category,
+            c.main_name AS categoryMain,
+            c.sub_name AS categorySub,
             p.grade AS grade,
             TO_CHAR(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') AS finishDate
         FROM product p
             JOIN brand b ON p.brand_id = b.brand_id
             JOIN category c ON p.category_id = c.category_id
         WHERE p.status = 'FINISH'
+            <if test="brand != null and brand != ''">
+                AND b.name = #{brand}
+            </if>
+            <if test="categoryMain != null and categoryMain != ''">
+                AND c.main_name = #{categoryMain}
+            </if>
+            <if test="categorySub != null and categorySub != ''">
+                AND c.sub_name = #{categorySub}
+            </if>
+            <if test="grade != null and grade != ''">
+                AND p.grade = #{grade}
+            </if>
+        ORDER BY p.updated_at DESC
+        OFFSET #{pageStart} ROWS FETCH NEXT #{offset} ROWS ONLY
+    </select>
+
+    <!-- 총 개수 조회 -->
+    <select id="countFinishProducts"
+            parameterType="com.earth.ureverse.admin.dto.request.ProductSearchRequest"
+            resultType="long">
+        SELECT COUNT(*)
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        WHERE p.status = 'FINISH'
+        <if test="brand != null and brand != ''">
+            AND b.name = #{brand}
+        </if>
+        <if test="categoryMain != null and categoryMain != ''">
+            AND c.main_name = #{categoryMain}
+        </if>
+        <if test="categorySub != null and categorySub != ''">
+            AND c.sub_name = #{categorySub}
+        </if>
+        <if test="grade != null and grade != ''">
+            AND p.grade = #{grade}
+        </if>
     </select>
 
     <!-- 검수 완료 상품 검색 -->
