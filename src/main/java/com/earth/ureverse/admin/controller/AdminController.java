@@ -12,6 +12,7 @@ import com.earth.ureverse.admin.service.AdminProductService;
 import com.earth.ureverse.admin.service.AdminUserService;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.global.common.response.PaginationResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Admin", description = "관리자 서비스 API 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admins")

@@ -6,6 +6,7 @@ import com.earth.ureverse.global.auth.dto.request.SignUpRequestDto;
 import com.earth.ureverse.global.auth.dto.response.LoginResponseDto;
 import com.earth.ureverse.global.auth.service.AuthService;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 
+@Tag(name = "Auth", description = "인증/인가 관리 서비스 API 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
