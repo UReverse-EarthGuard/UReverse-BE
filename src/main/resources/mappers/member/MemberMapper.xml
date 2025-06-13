@@ -11,4 +11,20 @@
         WHERE USER_ID = #{userId}
     </update>
 
+    <update id="updateMember" parameterType="map">
+        UPDATE USERS
+        <set>
+            <if test="updateMemberRequestDto.name != null"> NAME = #{updateMemberRequestDto.name}, </if>
+            <if test="updateMemberRequestDto.phone != null"> PHONE = #{updateMemberRequestDto.phone}, </if>
+            <if test="updateMemberRequestDto.email != null"> EMAIL = #{updateMemberRequestDto.email}, </if>
+        </set>
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE USERS
+        SET PASSWORD = #{encodedPassword}
+        WHERE USER_ID = #{userId}
+    </update>
+
 </mapper>
