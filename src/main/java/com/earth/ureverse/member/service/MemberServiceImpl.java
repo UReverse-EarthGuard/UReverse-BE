@@ -101,15 +101,7 @@ public class MemberServiceImpl implements MemberService {
             throw new AlreadyWithdrawnException();
         }
 
-        // limit 유효성 검사
-        if (limit <= 0) {
-            throw new IllegalParameterException("limit은 1 이상의 값이어야 합니다.");
-        }
-
-        // 날짜 포맷 유효성 검사 (커서 사용 시)
-        if (lastCreatedAt != null && !isValidDateTimeFormat(lastCreatedAt)) {
-            throw new IllegalParameterException("lastCreatedAt의 형식이 잘못되었습니다. (예: 2025-06-13 14:00:00)");
-        }
+        validateCursorRequest(limit, lastCreatedAt);
 
         List<PointHistoryResponseDto> pointHistory = pointMapper.getPointHistory(userId, limit, lastCreatedAt, lastProductId);
         String newLastCreatedAt = null;
@@ -135,15 +127,7 @@ public class MemberServiceImpl implements MemberService {
             throw new AlreadyWithdrawnException();
         }
 
-        // limit 유효성 검사
-        if (limit <= 0) {
-            throw new IllegalParameterException("limit은 1 이상의 값이어야 합니다.");
-        }
-
-        // 날짜 포맷 유효성 검사 (커서 사용 시)
-        if (lastCreatedAt != null && !isValidDateTimeFormat(lastCreatedAt)) {
-            throw new IllegalParameterException("lastCreatedAt의 형식이 잘못되었습니다. (예: 2025-06-13 14:00:00)");
-        }
+        validateCursorRequest(limit, lastCreatedAt);
 
         List<SalesHistoryResponseDto> salesHistory = salesMapper.getSalesHistory(userId, limit, lastCreatedAt, lastProductId);
         String newLastCreatedAt = null;
@@ -156,6 +140,16 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return new SalesHistoryListResponseDto(salesHistory, newLastCreatedAt, newLastProductId);
+    }
+
+    private void validateCursorRequest(int limit, String lastCreatedAt) {
+        if (limit <= 0) {
+            throw new IllegalParameterException("limit은 1 이상의 값이어야 합니다.");
+        }
+
+        if (lastCreatedAt != null && !isValidDateTimeFormat(lastCreatedAt)) {
+            throw new IllegalParameterException("lastCreatedAt의 형식이 잘못되었습니다. (예: 2025-06-13 14:00:00)");
+        }
     }
 
     // 유효한 날짜 형식인지 확인 (yyyy-MM-dd HH:mm:ss)
