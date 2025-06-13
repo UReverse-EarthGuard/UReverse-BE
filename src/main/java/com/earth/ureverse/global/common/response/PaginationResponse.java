@@ -15,16 +15,16 @@ public class PaginationResponse<T> {
     private List<T> items; //목록 데이터
     private long totalCount; //총 데이터 수
     private int pageNum; //현재 페이지 번호
-    private int offset; //한 페이지에 보여줄 데이터 수
+    private int pageSize; //한 페이지에 보여줄 데이터 수
     private int totalPages; //전체 페이지 수
     private int startIndex; //데이터 시작 인덱스
 
-    public PaginationResponse(List<T> items, long totalCount, int pageNum, int offset) {
+    public PaginationResponse(List<T> items, long totalCount, int pageNum, int pageSize) {
         this.items = items;
         this.totalCount = totalCount;
         this.pageNum = pageNum;
-        this.offset = offset;
-        this.startIndex = (pageNum - 1) * offset;
-        this.totalPages = (int) Math.ceil((double) totalCount / offset);
+        this.pageSize = pageSize;
+        this.startIndex = (pageNum - 1) * pageSize;
+        this.totalPages = (int) Math.ceil((double) totalCount / pageSize);
     }
 }
