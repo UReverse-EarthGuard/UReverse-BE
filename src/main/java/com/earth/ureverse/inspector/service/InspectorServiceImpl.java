@@ -2,6 +2,7 @@ package com.earth.ureverse.inspector.service;
 
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.NotFoundException;
+import com.earth.ureverse.global.common.response.PaginationResponse;
 import com.earth.ureverse.global.mapper.ProductMapper;
 import com.earth.ureverse.global.util.ProductValidator;
 import com.earth.ureverse.inspector.dto.request.ProductInspectionRequestDto;
@@ -23,20 +24,25 @@ public class InspectorServiceImpl implements InspectorService{
     private final ProductValidator productValidator;
 
     @Override
-    public List<ProductSearchResultDto> searchProducts(Long inspectorId, ProductSearchRequestDto dto) {
-
+    public PaginationResponse<ProductSearchResultDto> searchProducts(Long inspectorId, ProductSearchRequestDto dto) {
         int pageNum = dto.getPageNum() != null ? dto.getPageNum() : 1;
         int pageSize = dto.getPageSize() != null ? dto.getPageSize() : 6;
         int offset = (pageNum - 1) * pageSize;
+        String keyword = dto.getKeyword();
 
-        if (dto.isInspected()) {
-            return productMapper
-                    .getInspectionCompletedProductsByInspectorAndKeyword(inspectorId, dto.getKeyword(), offset, pageSize);
-        } else {
-            return productMapper
-                    .getPendingInspectionProductsByInspectorAndKeyword(inspectorId, dto.getKeyword(), offset, pageSize);
-        }
+        boolean isInspected = dto.isInspected();
+
+        List<ProductSearchResultDto> items = isInspected
+                ? productMapper.getInspectionCompletedProductsByInspectorAndKeyword(inspectorId, keyword, offset, pageSize)
+                : productMapper.getPendingInspectionProductsByInspectorAndKeyword(inspectorId, keyword, offset, pageSize);
+
+        int total = isInspected
+                ? productMapper.countInspectionCompletedProductsByInspectorAndKeyword(inspectorId, keyword)
+                : productMapper.countPendingInspectionProductsByInspectorAndKeyword(inspectorId, keyword);
+
+        return new PaginationResponse<>(items, total, pageNum, offset);
     }
+
 
     @Override
     public ProductInspectionDetailDto getPendingProductDetail(Long productId) {

@@ -53,4 +53,11 @@ public interface ProductMapper {
     boolean existsByProductId(@Param("productId") Long productId);
 
     String getProductStatus(@Param("productId") Long productId);
+
+    int countInspectionCompletedProductsByInspectorAndKeyword(@Param("inspectorId") Long inspectorId,
+                                                              @Param("keyword") String keyword);
+
+    int countPendingInspectionProductsByInspectorAndKeyword(@Param("inspectorId") Long inspectorId,
+                                                            @Param("keyword") String keyword);
+
 }

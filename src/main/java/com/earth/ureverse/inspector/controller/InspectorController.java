@@ -2,6 +2,7 @@ package com.earth.ureverse.inspector.controller;
 
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
+import com.earth.ureverse.global.common.response.PaginationResponse;
 import com.earth.ureverse.inspector.dto.request.ProductInspectionRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
@@ -32,7 +33,7 @@ public class InspectorController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             ProductSearchRequestDto requestDto
     ) {
-        List<ProductSearchResultDto> result = inspectorService.searchProducts(
+        PaginationResponse<ProductSearchResultDto> result = inspectorService.searchProducts(
                 userDetails.getUserId(), requestDto
         );
         return ResponseEntity.ok(CommonResponseEntity.success(result));
