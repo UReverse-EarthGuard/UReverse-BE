@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SalesHistoryListResponseDto {
 
-    private List<SalesHistoryResponseDto> histories;
+    private List<SalesHistoryResponseDto> salesHistory;
     private String lastCreatedAt;    // 이전 페이지에서 마지막으로 조회된 데이터의 createdAt
     private Long lastProductId;    // 이전 페이지에서 마지막으로 조회된 데이터의 productId
 
