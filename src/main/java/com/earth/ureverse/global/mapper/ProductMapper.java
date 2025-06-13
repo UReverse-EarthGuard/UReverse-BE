@@ -11,6 +11,7 @@ import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -69,4 +70,5 @@ public interface ProductMapper {
     int countPendingInspectionProductsByInspectorAndKeyword(@Param("inspectorId") Long inspectorId,
                                                             @Param("keyword") String keyword);
 
+    void updateProductStatus(Long productId, String status, LocalDateTime now, Long updatedBy);
 }

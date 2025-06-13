@@ -10,9 +10,11 @@ import com.earth.ureverse.admin.dto.response.PickupProductResponse;
 import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
 import com.earth.ureverse.admin.service.AdminProductService;
 import com.earth.ureverse.admin.service.AdminUserService;
+import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.global.common.response.PaginationResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,4 +59,14 @@ public class AdminController {
     ) {
         return CommonResponseEntity.success(adminUserService.getActiveUsers(request));
     }
+
+    @PostMapping("/products/{productId}/pickup")
+    public CommonResponseEntity<String> requestPickup(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable Long productId
+    ) {
+        adminProductService.requestPickup(customUserDetails, productId);
+        return CommonResponseEntity.success("수거 요청이 등록되었습니다.");
+    }
+
 }

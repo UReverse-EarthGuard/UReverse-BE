@@ -518,4 +518,13 @@
         </if>
     </select>
 
+    <!--  상품 상태 변경  -->
+    <update id="updateProductStatus">
+        UPDATE product
+        SET status = #{status},
+            updated_at = #{now},
+            updated_by = #{updatedBy}
+        WHERE product_id = #{productId}
+    </update>
+
 </mapper>
