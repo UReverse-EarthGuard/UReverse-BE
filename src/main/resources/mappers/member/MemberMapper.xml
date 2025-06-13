@@ -11,4 +11,48 @@
         WHERE USER_ID = #{userId}
     </update>
 
+    <update id="updateMember" parameterType="map">
+        UPDATE USERS
+        <set>
+            <if test="updateMemberRequestDto.name != null"> NAME = #{updateMemberRequestDto.name}, </if>
+            <if test="updateMemberRequestDto.phone != null"> PHONE = #{updateMemberRequestDto.phone}, </if>
+            <if test="updateMemberRequestDto.email != null"> EMAIL = #{updateMemberRequestDto.email}, </if>
+        </set>
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <update id="updatePassword">
+        UPDATE USERS
+        SET PASSWORD = #{encodedPassword}
+        WHERE USER_ID = #{userId}
+    </update>
+
+    <!--  활성 유저 목록(관리자)  -->
+    <select id="getActiveUsers" resultType="com.earth.ureverse.admin.dto.response.ActiveMemberResponse">
+        SELECT
+            u.user_id AS id,
+            u.name,
+            u.email,
+            u.phone,
+            NVL(SUM(CASE WHEN p.status = 'FINISH' THEN p.paid_point ELSE 0 END), 0) AS point,
+            NVL(COUNT(CASE WHEN p.status = 'FINISH' THEN p.product_id END), 0) AS sales,
+            TO_CHAR(u.created_at, 'YYYY-MM-DD') AS createdAt
+        FROM users u
+            LEFT JOIN product p ON u.user_id = p.user_id
+        WHERE u.email LIKE #{email} || '%'
+        AND u.ROLE = 'ROLE_MEMBER'
+        AND u.isactive = 'active'
+        GROUP BY u.user_id, u.name, u.email, u.phone, u.created_at
+        ORDER BY u.created_at DESC
+        OFFSET #{pageStart} ROWS FETCH NEXT #{offset} ROWS ONLY
+    </select>
+    <!--총 활성 유저 수-->
+    <select id="countActiveUsers" resultType="long">
+        SELECT COUNT(*)
+        FROM users u
+        WHERE u.email LIKE #{email} || '%'
+        AND u.ROLE = 'ROLE_MEMBER'
+        AND u.isactive = 'active'
+    </select>
+
 </mapper>

@@ -22,14 +22,14 @@ public class AdminProductServiceImpl implements AdminProductService {
     public PaginationResponse<FinishProductResponse> getFinishProducts(ProductSearchRequest request) {
         List<FinishProductResponse> items = productMapper.getFinishProducts(request);
         long total = productMapper.countFinishProducts(request);
-        return new PaginationResponse<>(items, total, request.getPageNum(), request.getOffset());
+        return new PaginationResponse<>(items, total, request.getPageNum(), request.getPageSize());
     }
 
     @Override
     public PaginationResponse<PickupProductResponse> getPickupProducts(PickupSearchRequest request) {
         List<PickupProductResponse> items = productMapper.getPickupProducts(request);
         long total = productMapper.countPickupProducts(request);
-        return new PaginationResponse<>(items, total, request.getPageNum(), request.getOffset());
+        return new PaginationResponse<>(items, total, request.getPageNum(), request.getPageSize());
     }
 
     @Override

@@ -39,7 +39,7 @@
                 AND p.grade = #{grade}
             </if>
         ORDER BY p.updated_at DESC
-        OFFSET #{pageStart} ROWS FETCH NEXT #{offset} ROWS ONLY
+        OFFSET #{pageStart} ROWS FETCH NEXT #{pageSize} ROWS ONLY
     </select>
 
     <!-- 총 개수 조회(FINISH 상태 상품 목록) -->
@@ -72,7 +72,8 @@
         SELECT
         p.product_id AS productId,
         b.name AS brandName,
-        c.name AS categoryName,
+        c.main_name AS categoryMain,
+        c.sub_name AS categorySub,
         p.status AS status,
         img.url AS imageUrl,
         TO_CHAR(p.created_at, 'YYYY-MM-DD HH24:MI:SS') AS createdAt,
@@ -92,7 +93,8 @@
         ) img ON img.product_id = p.product_id
         WHERE p.status IN ('REJECT', 'SECOND_INSPECT', 'DELIVERY_REQUEST', 'DELIVERING', 'FINISH')
         <if test="keyword != null and keyword != ''">
-            AND (LOWER(c.name) LIKE '%' || LOWER(#{keyword}) || '%'
+            AND (LOWER(c.main_name) LIKE '%' || LOWER(#{keyword}) || '%'
+            OR LOWER(c.sub_name) LIKE '%' || LOWER(#{keyword}) || '%'
             OR LOWER(b.name) LIKE '%' || LOWER(#{keyword}) || '%')
         </if>
         ORDER BY p.created_at DESC
@@ -107,7 +109,8 @@
         SELECT
         p.product_id AS productId,
         b.name AS brandName,
-        c.name AS categoryName,
+        c.main_name AS categoryMain,
+        c.sub_name AS categorySub,
         p.status AS status,
         img.url AS imageUrl,
         TO_CHAR(p.created_at, 'YYYY-MM-DD HH24:MI:SS') AS createdAt,
@@ -127,7 +130,8 @@
         ) img ON img.product_id = p.product_id
         WHERE p.status = 'FIRST_INSPECT'
         <if test="keyword != null and keyword != ''">
-            AND (LOWER(c.name) LIKE '%' || LOWER(#{keyword}) || '%'
+            AND (LOWER(c.main_name) LIKE '%' || LOWER(#{keyword}) || '%'
+            OR LOWER(c.sub_name) LIKE '%' || LOWER(#{keyword}) || '%'
             OR LOWER(b.name) LIKE '%' || LOWER(#{keyword}) || '%')
         </if>
         ORDER BY p.created_at DESC
@@ -177,7 +181,7 @@
                 </foreach>
             </if>
         ORDER BY p.updated_at DESC
-        OFFSET #{pageStart} ROWS FETCH NEXT #{offset} ROWS ONLY
+        OFFSET #{pageStart} ROWS FETCH NEXT #{pageSize} ROWS ONLY
     </select>
 
     <!-- 총 개수 조회(FINISH 상태 상품 목록) -->
@@ -297,8 +301,8 @@
         <result property="productId" column="product_id"/>
         <result property="userId" column="user_id"/>
         <result property="brandName" column="brand_name"/>
-        <result property="categoryMainName" column="category_main_name"/>
-        <result property="categorySubName" column="category_sub_name"/>
+        <result property="categoryMain" column="category_main"/>
+        <result property="categorySub" column="category_sub"/>
         <result property="expectedPoint" column="expected_point"/>
 
         <association
@@ -318,8 +322,8 @@
         p.product_id,
         p.user_id,
         b.name AS brand_name,
-        c.main_name AS category_main_name,
-        c.sub_name AS category_sub_name,
+        c.main_name AS category_main,
+        c.sub_name AS category_sub,
         combi.point AS expected_point,
         pi.url AS image_url
         FROM product p
@@ -348,6 +352,41 @@
         AND inspect_method = 'AI'
         FETCH FIRST 1 ROWS ONLY
     </select>
+
+    <!-- 검수 결과 등록 -->
+    <insert id="insertInspection">
+        INSERT INTO inspection (
+        inspection_id, product_id, inspector_id, inspect_method, result, notes,
+        is_torn, has_stain, has_fading, is_stretched, other_defect,
+        created_at, created_by
+        ) VALUES (
+        inspection_seq.NEXTVAL,
+        #{dto.productId}, #{inspectorId}, 'Human', #{dto.result}, #{dto.notes},
+        #{dto.isTorn}, #{dto.hasStain}, #{dto.hasFading},
+        #{dto.isStretched}, #{dto.otherDefect},
+        SYSDATE, #{inspectorId}
+        )
+    </insert>
+
+    <!-- 예상 포인트 조회 -->
+    <select id="getExpectedPoint" resultType="long">
+        SELECT point
+        FROM brand_category_combination
+        WHERE brand_id = (SELECT brand_id FROM product WHERE product_id = #{productId})
+        AND category_id = (SELECT category_id FROM product WHERE product_id = #{productId})
+    </select>
+
+    <!-- 검수 후 상품 업데이트 -->
+    <update id="updateProductAfterInspection">
+        UPDATE product
+        SET
+        grade = #{grade},
+        paid_point = #{paidPoint},
+        status = #{status},
+        updated_at = SYSDATE,
+        updated_by = #{inspectorId}
+        WHERE product_id = #{productId}
+    </update>
 
     <!-- AI, HUMAN 검사 결과 DTO 매핑 -->
     <resultMap id="InspectionResultMap" type="com.earth.ureverse.inspector.dto.response.InspectionResultDto">
@@ -441,6 +480,42 @@
             d.phone as senderPhone
         FROM delivery d
         WHERE d.product_id = #{productId}
+    </select>
+
+    <!-- 검수 완료 상품 total 수 조회 -->
+    <select id="countInspectionCompletedProductsByInspectorAndKeyword" resultType="int">
+        SELECT COUNT(*)
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        JOIN brand_category_combination bcc
+        ON p.brand_id = bcc.brand_id
+        AND p.category_id = bcc.category_id
+        AND bcc.inspector_id = #{inspectorId}
+        WHERE p.status IN ('REJECT', 'SECOND_INSPECT', 'DELIVERY_REQUEST', 'DELIVERING', 'FINISH')
+        <if test="keyword != null and keyword != ''">
+            AND (LOWER(c.main_name) LIKE '%' || LOWER(#{keyword}) || '%'
+            OR LOWER(c.sub_name) LIKE '%' || LOWER(#{keyword}) || '%'
+            OR LOWER(b.name) LIKE '%' || LOWER(#{keyword}) || '%')
+        </if>
+    </select>
+
+    <!-- 검수 미완료 상품 total 수 조회 -->
+    <select id="countPendingInspectionProductsByInspectorAndKeyword" resultType="int">
+        SELECT COUNT(*)
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        JOIN brand_category_combination bcc
+        ON p.brand_id = bcc.brand_id
+        AND p.category_id = bcc.category_id
+        AND bcc.inspector_id = #{inspectorId}
+        WHERE p.status = 'FIRST_INSPECT'
+        <if test="keyword != null and keyword != ''">
+            AND (LOWER(c.main_name) LIKE '%' || LOWER(#{keyword}) || '%'
+            OR LOWER(c.sub_name) LIKE '%' || LOWER(#{keyword}) || '%'
+            OR LOWER(b.name) LIKE '%' || LOWER(#{keyword}) || '%')
+        </if>
     </select>
 
 </mapper>

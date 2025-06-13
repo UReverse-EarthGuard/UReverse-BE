@@ -9,8 +9,8 @@ public class ProductInspectionDetailDto {
     private Long productId;
     private List<String> imageUrls;
     private String brandName;
-    private String categoryMainName;
-    private String categorySubName;
+    private String categoryMain;
+    private String categorySub;
     private Long expectedPoint;
     private Long userId;
     private InspectionResultDto aiInspection;

@@ -51,7 +51,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public CommonResponseEntity<Void> logout(HttpServletResponse response) {
+    public CommonResponseEntity<String> logout(HttpServletResponse response) {
         ResponseCookie expiredCookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
                 .secure(false)
@@ -61,7 +61,7 @@ public class AuthController {
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
-        return CommonResponseEntity.success(null);
+        return CommonResponseEntity.success("로그아웃되었습니다.");
     }
 
     @PostMapping("/sign-up")
