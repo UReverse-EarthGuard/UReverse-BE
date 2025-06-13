@@ -23,4 +23,6 @@ public interface AdminProductService {
     DashBoardSummaryResponse getDashBoardSummary(String date);
 
     void requestPickup(CustomUserDetails customUserDetails, Long productId);
+
+    DashBoardInspectionResultRatioResponse getInspectionResultRatio(String date, String method);
 }
