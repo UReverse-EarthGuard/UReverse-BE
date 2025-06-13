@@ -81,6 +81,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         productStatusAsyncService.updateStatusWithDelay(productId, adminId);
     }
 
+
     @Override
     public DashBoardSummaryResponse getDashBoardSummary(String date) {
         if(!isValidDateTimeFormat(date)){
@@ -111,5 +112,30 @@ public class AdminProductServiceImpl implements AdminProductService {
         LocalDate startOfWeek = date.minusDays(dayOfWeek.getValue());
         LocalDate endOfWeek = startOfWeek.plusDays(6);
         return new LocalDate[]{startOfWeek, endOfWeek}; //월~일
+    }
+
+    @Override
+    public DashBoardInspectionDefectRatioResponse getInspectionDefectRatio(String date, String method) {
+        if(!isValidDateTimeFormat(date)){
+            throw new IllegalArgumentException("date형식이 아닙니다.");
+        }
+        if (!("AI".equalsIgnoreCase(method) || "Human".equalsIgnoreCase(method))) {
+            throw new IllegalArgumentException("검수 방식은 AI 또는 Human이어야 합니다.");
+        }
+
+        DashBoardInspectionDefectRatioResponse response = productMapper.getInspectionDefectRatio(date, method);
+        int totalDefectCount = response.getTornCount() + response.getStainCount() + response.getFadingCount() +
+                response.getStretchedCount() + response.getOtherCount();
+        response.setTornRatio(calcRatio(response.getTornCount(), totalDefectCount));
+        response.setStainRatio(calcRatio(response.getStainCount(), totalDefectCount));
+        response.setFadingRatio(calcRatio(response.getFadingCount(), totalDefectCount));
+        response.setStretchedRatio(calcRatio(response.getStretchedCount(), totalDefectCount));
+        response.setOtherRatio(calcRatio(response.getOtherCount(), totalDefectCount));
+
+        return response;
+    }
+    private double calcRatio(Integer count, int total) {
+        if (count == null || total == 0) return 0.0;
+        return Math.round((count * 100.0 / total) * 100) / 100.0;
     }
 }

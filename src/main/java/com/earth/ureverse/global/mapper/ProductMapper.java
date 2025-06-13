@@ -77,4 +77,6 @@ public interface ProductMapper {
     Long getTotalPaidPoint(String date);
 
     List<DashBoardBrandResponse> getTopBrandsOfWeek(String startDate, String endDate);
+
+    DashBoardInspectionDefectRatioResponse getInspectionDefectRatio(String date, String method);
 }
