@@ -8,7 +8,8 @@ import lombok.Setter;
 public class ProductSearchResultDto {
     private Long productId;
     private String brandName;
-    private String categoryName;
+    private String categoryMain;
+    private String categorySub;
     private String status;
     private String imageUrl; // 대표 이미지 1개
     private String createdAt;

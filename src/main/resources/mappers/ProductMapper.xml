@@ -72,7 +72,8 @@
         SELECT
         p.product_id AS productId,
         b.name AS brandName,
-        c.name AS categoryName,
+        c.main_name AS categoryMain,
+        c.sub_name AS categorySub,
         p.status AS status,
         img.url AS imageUrl,
         TO_CHAR(p.created_at, 'YYYY-MM-DD HH24:MI:SS') AS createdAt,
@@ -92,7 +93,8 @@
         ) img ON img.product_id = p.product_id
         WHERE p.status IN ('REJECT', 'SECOND_INSPECT', 'DELIVERY_REQUEST', 'DELIVERING', 'FINISH')
         <if test="keyword != null and keyword != ''">
-            AND (LOWER(c.name) LIKE '%' || LOWER(#{keyword}) || '%'
+            AND (LOWER(c.main_name) LIKE '%' || LOWER(#{keyword}) || '%'
+            OR LOWER(c.sub_name) LIKE '%' || LOWER(#{keyword}) || '%'
             OR LOWER(b.name) LIKE '%' || LOWER(#{keyword}) || '%')
         </if>
         ORDER BY p.created_at DESC
@@ -107,7 +109,8 @@
         SELECT
         p.product_id AS productId,
         b.name AS brandName,
-        c.name AS categoryName,
+        c.main_name AS categoryMain,
+        c.sub_name AS categorySub,
         p.status AS status,
         img.url AS imageUrl,
         TO_CHAR(p.created_at, 'YYYY-MM-DD HH24:MI:SS') AS createdAt,
@@ -127,7 +130,8 @@
         ) img ON img.product_id = p.product_id
         WHERE p.status = 'FIRST_INSPECT'
         <if test="keyword != null and keyword != ''">
-            AND (LOWER(c.name) LIKE '%' || LOWER(#{keyword}) || '%'
+            AND (LOWER(c.main_name) LIKE '%' || LOWER(#{keyword}) || '%'
+            OR LOWER(c.sub_name) LIKE '%' || LOWER(#{keyword}) || '%'
             OR LOWER(b.name) LIKE '%' || LOWER(#{keyword}) || '%')
         </if>
         ORDER BY p.created_at DESC
@@ -273,8 +277,8 @@
         <result property="productId" column="product_id"/>
         <result property="userId" column="user_id"/>
         <result property="brandName" column="brand_name"/>
-        <result property="categoryMainName" column="category_main_name"/>
-        <result property="categorySubName" column="category_sub_name"/>
+        <result property="categoryMain" column="category_main"/>
+        <result property="categorySub" column="category_sub"/>
         <result property="expectedPoint" column="expected_point"/>
 
         <association
@@ -294,8 +298,8 @@
         p.product_id,
         p.user_id,
         b.name AS brand_name,
-        c.main_name AS category_main_name,
-        c.sub_name AS category_sub_name,
+        c.main_name AS category_main,
+        c.sub_name AS category_sub,
         combi.point AS expected_point,
         pi.url AS image_url
         FROM product p
