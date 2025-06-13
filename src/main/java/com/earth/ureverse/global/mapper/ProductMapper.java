@@ -71,4 +71,10 @@ public interface ProductMapper {
                                                             @Param("keyword") String keyword);
 
     void updateProductStatus(Long productId, String status, LocalDateTime now, Long updatedBy);
+
+    Integer getPickupRequest();
+
+    Long getTotalPaidPoint(String date);
+
+    List<DashBoardBrandResponse> getTopBrandsOfWeek(String startDate, String endDate);
 }
