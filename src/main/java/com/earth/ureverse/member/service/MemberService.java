@@ -15,7 +15,7 @@ public interface MemberService {
 
     void changePassword(Long userId, @Valid ChangePasswordRequestDto changePasswordRequestDto);
 
-    PointHistoryListResponseDto getPointHistories(Long userId, int limit, String lastCreatedAt, Long lastProductId);
+    PointHistoryListResponseDto getPointHistory(Long userId, int limit, String lastCreatedAt, Long lastProductId);
 
     SalesHistoryListResponseDto getSalesHistory(Long userId, int limit, String lastCreatedAt, Long lastProductId);
 

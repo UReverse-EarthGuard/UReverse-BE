@@ -93,7 +93,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public PointHistoryListResponseDto getPointHistories(Long userId, int limit, String lastCreatedAt, Long lastProductId) {
+    public PointHistoryListResponseDto getPointHistory(Long userId, int limit, String lastCreatedAt, Long lastProductId) {
         AuthenticatedUser authenticatedUser = authMapper.findByUserId(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -111,19 +111,19 @@ public class MemberServiceImpl implements MemberService {
             throw new IllegalParameterException("lastCreatedAt의 형식이 잘못되었습니다. (예: 2025-06-13 14:00:00)");
         }
 
-        List<PointHistoryResponseDto> pointHistories = pointMapper.getPointHistories(userId, limit, lastCreatedAt, lastProductId);
+        List<PointHistoryResponseDto> pointHistory = pointMapper.getPointHistory(userId, limit, lastCreatedAt, lastProductId);
         String newLastCreatedAt = null;
         Long newLastProductId = null;
 
-        if (!pointHistories.isEmpty()) {
-            PointHistoryResponseDto lastItem = pointHistories.get(pointHistories.size() - 1);
+        if (!pointHistory.isEmpty()) {
+            PointHistoryResponseDto lastItem = pointHistory.get(pointHistory.size() - 1);
             newLastCreatedAt = lastItem.getCreatedAt();
             newLastProductId = lastItem.getProductId();
         }
 
         int totalPoint = pointMapper.getTotalPoint(userId);
 
-        return new PointHistoryListResponseDto(totalPoint, pointHistories, newLastCreatedAt, newLastProductId);
+        return new PointHistoryListResponseDto(totalPoint, pointHistory, newLastCreatedAt, newLastProductId);
     }
 
     @Override

@@ -5,7 +5,7 @@
 
 <mapper namespace="com.earth.ureverse.member.mapper.PointMapper">
 
-    <select id="getPointHistories" resultType="com.earth.ureverse.member.dto.response.PointHistoryResponseDto">
+    <select id="getPointHistory" resultType="com.earth.ureverse.member.dto.response.PointHistoryResponseDto">
         SELECT
             P.PAID_POINT AS POINT,
             P.PRODUCT_ID AS PRODUCTID,
@@ -27,7 +27,7 @@
             )
             ]]>
         </if>
-        ORDER BY p.created_at DESC, p.product_id DESC
+        ORDER BY P.CREATED_AT DESC, P.PRODUCT_ID DESC
         FETCH FIRST #{limit} ROWS ONLY
     </select>
 

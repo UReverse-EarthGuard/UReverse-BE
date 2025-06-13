@@ -62,13 +62,13 @@ public class MemberController {
     }
 
     @GetMapping("/points")
-    public CommonResponseEntity<PointHistoryListResponseDto> getPointHistories(
+    public CommonResponseEntity<PointHistoryListResponseDto> getPointHistory(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(required = false) String lastCreatedAt,
             @RequestParam(required = false) Long lastProductId
     ) {
-        PointHistoryListResponseDto pointHistoryListResponseDto = memberService.getPointHistories(
+        PointHistoryListResponseDto pointHistoryListResponseDto = memberService.getPointHistory(
                 customUserDetails.getUserId(), limit, lastCreatedAt, lastProductId
         );
         return  CommonResponseEntity.success(pointHistoryListResponseDto);

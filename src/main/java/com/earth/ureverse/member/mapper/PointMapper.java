@@ -9,7 +9,7 @@ import java.util.List;
 @Mapper
 public interface PointMapper {
 
-    List<PointHistoryResponseDto> getPointHistories(
+    List<PointHistoryResponseDto> getPointHistory(
             @Param(value = "userId") Long userId,
             @Param(value = "limit") int limit,
             @Param(value = "lastCreatedAt") String lastCreatedAt,
