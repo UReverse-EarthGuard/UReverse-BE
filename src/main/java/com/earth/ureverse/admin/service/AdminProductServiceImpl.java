@@ -150,11 +150,9 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         return response;
     }
-
     private double calcRatio(Integer count, Integer total) {
         if (count == null || total==null || total == 0) return 0.0;
         return Math.round((count * 100.0 / total) * 100) / 100.0;
-        return productMapper.getInspectionResultRatio(date, method);
     }
 
     @Override

@@ -94,6 +94,7 @@ public class AdminController {
         return CommonResponseEntity.success(adminProductService.getInspectionDefectRatio(date, method));
     }
 
+
     @GetMapping("/dash-boards/finish-stats/{range}")
     public CommonResponseEntity<List<DashBoardFinishProductResponse>> getFinishStats(@PathVariable String range){
         return CommonResponseEntity.success(adminProductService.getFinishStats(range));
