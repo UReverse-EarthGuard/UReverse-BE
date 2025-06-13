@@ -81,6 +81,7 @@ public class AdminProductServiceImpl implements AdminProductService {
         productStatusAsyncService.updateStatusWithDelay(productId, adminId);
     }
 
+
     @Override
     public DashBoardSummaryResponse getDashBoardSummary(String date) {
         if(!isValidDateTimeFormat(date)){
@@ -111,5 +112,16 @@ public class AdminProductServiceImpl implements AdminProductService {
         LocalDate startOfWeek = date.minusDays(dayOfWeek.getValue());
         LocalDate endOfWeek = startOfWeek.plusDays(6);
         return new LocalDate[]{startOfWeek, endOfWeek}; //월~일
+    }
+
+    @Override
+    public DashBoardInspectionResultRatioResponse getInspectionResultRatio(String date, String method) {
+        if(!isValidDateTimeFormat(date)){
+            throw new IllegalArgumentException("date형식이 아닙니다.");
+        }
+        if (!("AI".equalsIgnoreCase(method) || "Human".equalsIgnoreCase(method))) {
+            throw new IllegalArgumentException("검수 방식은 AI 또는 Human이어야 합니다.");
+        }
+        return productMapper.getInspectionResultRatio(date, method);
     }
 }
