@@ -39,7 +39,7 @@
                 AND p.grade = #{grade}
             </if>
         ORDER BY p.updated_at DESC
-        OFFSET #{pageStart} ROWS FETCH NEXT #{offset} ROWS ONLY
+        OFFSET #{pageStart} ROWS FETCH NEXT #{pageSize} ROWS ONLY
     </select>
 
     <!-- 총 개수 조회(FINISH 상태 상품 목록) -->
@@ -181,7 +181,7 @@
                 </foreach>
             </if>
         ORDER BY p.updated_at DESC
-        OFFSET #{pageStart} ROWS FETCH NEXT #{offset} ROWS ONLY
+        OFFSET #{pageStart} ROWS FETCH NEXT #{pageSize} ROWS ONLY
     </select>
 
     <!-- 총 개수 조회(FINISH 상태 상품 목록) -->

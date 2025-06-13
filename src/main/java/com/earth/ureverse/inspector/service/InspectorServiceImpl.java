@@ -40,7 +40,7 @@ public class InspectorServiceImpl implements InspectorService{
                 ? productMapper.countInspectionCompletedProductsByInspectorAndKeyword(inspectorId, keyword)
                 : productMapper.countPendingInspectionProductsByInspectorAndKeyword(inspectorId, keyword);
 
-        return new PaginationResponse<>(items, total, pageNum, offset);
+        return new PaginationResponse<>(items, total, pageNum, pageSize);
     }
 
 
