@@ -21,22 +21,14 @@ public class ProductValidator {
     }
 
     public void validateProductStatusIsFirstInspect(Long productId) {
-        String status = productMapper.getProductStatus(productId);
-        if (status == null) {
-            throw new BadRequestException("상품 상태를 조회할 수 없습니다: productId = " + productId);
-        }
-
+        String status = validateProductStatus(productId);
         if (!"FIRST_INSPECT".equals(status)) {
             throw new BadRequestException("검수 가능한 상품 상태가 아닙니다. 현재 상태: " + status);
         }
     }
 
     public void validateProductSecondInspected(Long productId) {
-        String status = productMapper.getProductStatus(productId);
-        if (status == null) {
-            throw new BadRequestException("상품 상태를 조회할 수 없습니다: productId = " + productId);
-        }
-
+        String status = validateProductStatus(productId);
         Set<String> allowedStatuses = Set.of("SECOND_INSPECT", "DELIVERY_REQUEST", "DELIVERING", "FINISH");
         if (!allowedStatuses.contains(status)) {
             throw new BadRequestException("검수 완료된 상품 상태가 아닙니다. 현재 상태: " + status);
@@ -55,13 +47,18 @@ public class ProductValidator {
     }
 
     public void validateProductPickup(Long productId) {
-        String status = productMapper.getProductStatus(productId);
-        if (status == null) {
-            throw new BadRequestException("상품 상태를 조회할 수 없습니다: productId = " + productId);
-        }
+        String status = validateProductStatus(productId);
         Set<String> allowedStatuses = Set.of("REGISTER", "FIRST_INSPECT", "SECOND_INSPECT", "DELIVERY_REQUEST", "DELIVERING", "FINISH");
         if (!allowedStatuses.contains(status)) {
             throw new BadRequestException("수거관리 대상이 아닙니다. 현재 상태: " + status);
         }
+    }
+
+    private String validateProductStatus(Long productId) {
+        String status = productMapper.getProductStatus(productId);
+        if (status == null) {
+            throw new BadRequestException("상품 상태를 조회할 수 없습니다: productId = " + productId);
+        }
+        return status;
     }
 }

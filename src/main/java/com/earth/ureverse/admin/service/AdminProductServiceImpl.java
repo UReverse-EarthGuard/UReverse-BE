@@ -34,13 +34,13 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     @Override
     public ProductInspectionResultResponse getFinishProductDetail(Long productId) {
+        productValidator.validateProductExists(productId);
+        productValidator.validateProductFinish(productId);
+
         ProductDetailResponse product = productMapper.getProductDetail(productId);
         InspectionResultResponse aiResult = productMapper.getAiInspection(productId);
         InspectionResultResponse inspectorResult = productMapper.getHumanInspection(productId);
         String grade = productMapper.getProductGrade(productId);
-
-        productValidator.validateProductExists(productId);
-        productValidator.validateProductFinish(productId);
 
         List<String> images = productMapper.getProductImages(productId);
         product.setImages(images);
@@ -49,14 +49,14 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     @Override
     public PickupProductDetailResponse getPickupProductDetail(Long productId) {
+        productValidator.validateProductExists(productId);
+        productValidator.validateProductPickup(productId);
+
         ProductDetailResponse product = productMapper.getProductDetail(productId);
         InspectionResultResponse aiResult = productMapper.getAiInspection(productId);
         InspectionResultResponse inspectorResult = productMapper.getHumanInspection(productId);
         DeliveryResponse delivery = productMapper.getDelivery(productId);
         String grade = productMapper.getProductGrade(productId);
-
-        productValidator.validateProductExists(productId);
-        productValidator.validateProductPickup(productId);
 
         List<String> images = productMapper.getProductImages(productId);
         product.setImages(images);
