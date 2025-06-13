@@ -6,6 +6,7 @@ import com.earth.ureverse.global.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
 @Component
 @RequiredArgsConstructor
 public class ProductValidator {
@@ -27,6 +28,18 @@ public class ProductValidator {
 
         if (!"FIRST_INSPECT".equals(status)) {
             throw new BadRequestException("검수 가능한 상품 상태가 아닙니다. 현재 상태: " + status);
+        }
+    }
+
+    public void validateProductSecondInspected(Long productId) {
+        String status = productMapper.getProductStatus(productId);
+        if (status == null) {
+            throw new BadRequestException("상품 상태를 조회할 수 없습니다: productId = " + productId);
+        }
+
+        Set<String> allowedStatuses = Set.of("SECOND_INSPECT", "DELIVERY_REQUEST", "DELIVERING", "FINISH");
+        if (!allowedStatuses.contains(status)) {
+            throw new BadRequestException("검수 완료된 상품 상태가 아닙니다. 현재 상태: " + status);
         }
     }
 }

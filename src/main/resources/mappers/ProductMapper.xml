@@ -6,7 +6,9 @@
 <mapper namespace="com.earth.ureverse.global.mapper.ProductMapper">
 
     <!-- FINISH 상태 상품 목록 조회 -->
-    <select id="getFinishProducts" resultType="com.earth.ureverse.admin.dto.response.FinishProductResponse">
+    <select id="getFinishProducts"
+            parameterType="com.earth.ureverse.admin.dto.request.ProductSearchRequest"
+            resultType="com.earth.ureverse.admin.dto.response.FinishProductResponse">
         SELECT
             p.product_id AS id,
             (
@@ -16,13 +18,51 @@
             AND ROWNUM = 1
             ) AS image,
             b.name AS brand,
-            c.name AS category,
+            c.main_name AS categoryMain,
+            c.sub_name AS categorySub,
             p.grade AS grade,
             TO_CHAR(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') AS finishDate
         FROM product p
             JOIN brand b ON p.brand_id = b.brand_id
             JOIN category c ON p.category_id = c.category_id
         WHERE p.status = 'FINISH'
+            <if test="brand != null and brand != ''">
+                AND b.name = #{brand}
+            </if>
+            <if test="categoryMain != null and categoryMain != ''">
+                AND c.main_name = #{categoryMain}
+            </if>
+            <if test="categorySub != null and categorySub != ''">
+                AND c.sub_name = #{categorySub}
+            </if>
+            <if test="grade != null and grade != ''">
+                AND p.grade = #{grade}
+            </if>
+        ORDER BY p.updated_at DESC
+        OFFSET #{pageStart} ROWS FETCH NEXT #{offset} ROWS ONLY
+    </select>
+
+    <!-- 총 개수 조회(FINISH 상태 상품 목록) -->
+    <select id="countFinishProducts"
+            parameterType="com.earth.ureverse.admin.dto.request.ProductSearchRequest"
+            resultType="long">
+        SELECT COUNT(*)
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        WHERE p.status = 'FINISH'
+        <if test="brand != null and brand != ''">
+            AND b.name = #{brand}
+        </if>
+        <if test="categoryMain != null and categoryMain != ''">
+            AND c.main_name = #{categoryMain}
+        </if>
+        <if test="categorySub != null and categorySub != ''">
+            AND c.sub_name = #{categorySub}
+        </if>
+        <if test="grade != null and grade != ''">
+            AND p.grade = #{grade}
+        </if>
     </select>
 
     <!-- 검수 완료 상품 검색 -->
@@ -95,46 +135,138 @@
 
     </select>
 
-    <!-- 상태 CANCEL 아닌 상품 목록 조회 (paid_point, updated_at) -->
-    <select id="getPickupProducts" resultType="com.earth.ureverse.admin.dto.response.PickupProductResponse">
+    <!-- 수거(완료전) 상품 목록 조회 (paid_point, updated_at) -->
+    <select id="getPickupProducts"
+            parameterType="com.earth.ureverse.admin.dto.request.PickupSearchRequest"
+            resultType="com.earth.ureverse.admin.dto.response.PickupProductResponse">
         SELECT
-        p.product_id AS id,
-        (
-        SELECT pi.url
-        FROM product_image pi
-        WHERE pi.product_id = p.product_id
-        AND ROWNUM = 1
-        ) AS image,
-        b.name AS brand,
-        c.name AS category,
-        p.grade AS grade,
-        p.paid_point AS paid_point,
-        p.status AS status,
-        TO_CHAR(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') AS updatedAt
+            p.product_id AS id,
+            (
+            SELECT pi.url
+            FROM product_image pi
+            WHERE pi.product_id = p.product_id
+            AND ROWNUM = 1
+            ) AS image,
+            b.name AS brand,
+            c.main_name AS categoryMain,
+            c.sub_name AS categorySub,
+            p.grade AS grade,
+            p.paid_point AS paid_point,
+            p.status AS status,
+            TO_CHAR(p.updated_at, 'YYYY-MM-DD HH24:MI:SS') AS updatedAt
+            FROM product p
+            JOIN brand b ON p.brand_id = b.brand_id
+            JOIN category c ON p.category_id = c.category_id
+        WHERE 1 = 1
+            <if test="brand != null and brand != ''">
+                AND b.name = #{brand}
+            </if>
+            <if test="categoryMain != null and categoryMain != ''">
+                AND c.main_name = #{categoryMain}
+            </if>
+            <if test="categorySub != null and categorySub != ''">
+                AND c.sub_name = #{categorySub}
+            </if>
+            <if test="grade != null and grade != ''">
+                AND p.grade = #{grade}
+            </if>
+            <if test="statusList != null and statusList.size() > 0">
+                AND p.status IN
+                <foreach item="status" collection="statusList" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+        ORDER BY p.updated_at DESC
+        OFFSET #{pageStart} ROWS FETCH NEXT #{offset} ROWS ONLY
+    </select>
+
+    <!-- 총 개수 조회(FINISH 상태 상품 목록) -->
+    <select id="countPickupProducts"
+            parameterType="com.earth.ureverse.admin.dto.request.PickupSearchRequest"
+            resultType="long">
+        SELECT COUNT(*)
         FROM product p
         JOIN brand b ON p.brand_id = b.brand_id
         JOIN category c ON p.category_id = c.category_id
-        WHERE p.status = 'REGISTER'
-            OR p.status = 'FIRST_INSPECT'
-            OR p.status = 'SECOND_INSPECT'
-            OR p.status = 'DELIVERY_REQUEST'
-            OR p.status = 'DELIVERING'
-            OR p.status = 'FINISH'
-        ORDER BY p.updated_at DESC
+        WHERE 1 = 1
+            <if test="brand != null and brand != ''">
+                AND b.name = #{brand}
+            </if>
+            <if test="categoryMain != null and categoryMain != ''">
+                AND c.main_name = #{categoryMain}
+            </if>
+            <if test="categorySub != null and categorySub != ''">
+                AND c.sub_name = #{categorySub}
+            </if>
+            <if test="grade != null and grade != ''">
+                AND p.grade = #{grade}
+            </if>
+            <if test="statusList != null and statusList.size() > 0">
+                AND p.status IN
+                <foreach item="status" collection="statusList" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
     </select>
 
-    <!-- 검사 결과 매핑 -->
-    <resultMap id="InspectionResultMap" type="com.earth.ureverse.inspector.dto.response.InspectionResultDto">
-        <result property="result" column="result"/>
-        <result property="notes" column="notes"/>
-        <result property="inspectMethod" column="inspect_method"/>
-        <result property="isTorn" column="is_torn"/>
-        <result property="hasStain" column="has_stain"/>
-        <result property="hasFading" column="has_fading"/>
-        <result property="isStretched" column="is_stretched"/>
-        <result property="otherDefect" column="other_defect"/>
-        <result property="createdAt" column="created_at"/>
-    </resultMap>
+    <!-- 상품 이미지 목록   -->
+    <select id="getProductImages"
+            parameterType="long"
+            resultType="string">
+        SELECT url
+        FROM product_image
+        WHERE product_id = #{productId}
+        ORDER BY image_id
+    </select>
+
+    <!-- 수거 완료된 상품 상세 정보   -->
+    <select id="getFinishProductDetail"
+            parameterType="long"
+            resultType="com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse">
+        SELECT
+        p.product_id              AS "product.id",
+        b.name                    AS "product.brand",
+        c.main_name               AS "product.categoryMain",
+        c.sub_name                AS "product.categorySub",
+        p.paid_point              AS "product.paidPoint",
+        bcc.point                 AS "product.expectPoint",
+        u.email                   AS "product.userEmail",
+        p.status                  AS "product.status",
+        TO_CHAR(p.updated_at, 'YYYY-MM-DD') AS "product.updatedAt",
+
+        -- AI 검사 결과
+        inspectorUser.email       AS "aiResult.inspectorEmail",
+        DECODE(aiins.is_torn, 'Y', 1, 0)        AS "aiResult.isTorn",
+        DECODE(aiins.has_stain, 'Y', 1, 0)       AS "aiResult.hasStain",
+        DECODE(aiins.has_fading, 'Y', 1, 0)      AS "aiResult.hasFading",
+        DECODE(aiins.is_stretched, 'Y', 1, 0)  AS "aiResult.isStretched",
+        aiins.notes               AS "aiResult.note",
+
+        -- Human 검사 결과
+        inspectorUser.email     AS "inspectorResult.inspectorEmail",
+        DECODE(huins.is_torn, 'Y', 1, 0)        AS "inspectorResult.isTorn",
+        DECODE(huins.has_stain, 'Y', 1, 0)       AS "inspectorResult.hasStain",
+        DECODE(huins.has_fading, 'Y', 1, 0)      AS "inspectorResult.hasFading",
+        DECODE(huins.is_stretched, 'Y', 1, 0)  AS "inspectorResult.isStretched",
+        huins.notes               AS "inspectorResult.note",
+
+        -- 최종 grade
+        p.grade                   AS grade
+
+        FROM product p
+        JOIN users u ON p.user_id = u.user_id
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        LEFT JOIN brand_category_combination bcc
+        ON p.brand_id = bcc.brand_id AND p.category_id = bcc.category_id
+        LEFT JOIN inspection aiins ON aiins.product_id = p.product_id AND aiins.inspect_method = 'AI'
+        LEFT JOIN inspection huins ON huins.product_id = p.product_id AND huins.inspect_method = 'Human'
+        LEFT JOIN users inspectorUser ON bcc.inspector_id = inspectorUser.user_id
+
+        WHERE p.status = 'FINISH'
+        AND p.product_id = #{productId}
+    </select>
+
 
     <!-- 상품 상세 응답 매핑 -->
     <resultMap id="ProductInspectionDetailMap" type="com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto">
@@ -228,6 +360,73 @@
         WHERE product_id = #{productId}
     </update>
 
+    <!-- AI, HUMAN 검사 결과 DTO 매핑 -->
+    <resultMap id="InspectionResultMap" type="com.earth.ureverse.inspector.dto.response.InspectionResultDto">
+        <result property="result" column="result"/>
+        <result property="notes" column="notes"/>
+        <result property="inspectMethod" column="inspect_method"/>
+        <result property="isTorn" column="is_torn"/>
+        <result property="hasStain" column="has_stain"/>
+        <result property="hasFading" column="has_fading"/>
+        <result property="isStretched" column="is_stretched"/>
+        <result property="otherDefect" column="other_defect"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 검수 완료 상품 상세 응답 DTO 매핑 -->
+    <resultMap id="ProductInspectedDetailMap" type="com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto">
+        <result property="productId" column="product_id"/>
+        <result property="brandName" column="brand_name"/>
+        <result property="categoryMain" column="category_main"/>
+        <result property="categorySub" column="category_sub"/>
+        <result property="expectedPoint" column="expected_point"/>
+        <result property="paidPoint" column="paid_point"/>
+        <result property="inspectedAt" column="human_created_at"/>
+
+        <association property="aiInspection" javaType="com.earth.ureverse.inspector.dto.response.InspectionResultDto"
+                     select="getInspectionResult"
+                     column="product_id"/>
+        <association property="humanInspection" javaType="com.earth.ureverse.inspector.dto.response.InspectionResultDto"
+                     select="getHumanInspectionResult"
+                     column="product_id"/>
+        <collection property="imageUrls" ofType="string">
+            <result column="image_url"/>
+        </collection>
+    </resultMap>
+
+    <!-- Inspected 상세 조회 -->
+    <select id="getInspectedProductDetail" resultMap="ProductInspectedDetailMap">
+        SELECT
+        p.product_id,
+        b.name AS brand_name,
+        c.main_name AS category_main,
+        c.sub_name AS category_sub,
+        combi.point AS expected_point,
+        p.paid_point,
+        TO_CHAR(hi.created_at, 'YYYY-MM-DD HH24:MI:SS') AS human_created_at,
+        pi.url AS image_url
+        FROM product p
+        JOIN brand b ON p.brand_id = b.brand_id
+        JOIN category c ON p.category_id = c.category_id
+        JOIN brand_category_combination combi
+        ON p.brand_id = combi.brand_id AND p.category_id = combi.category_id
+        LEFT JOIN inspection hi
+        ON p.product_id = hi.product_id AND hi.inspect_method = 'Human'
+        LEFT JOIN product_image pi
+        ON p.product_id = pi.product_id
+        WHERE p.product_id = #{productId}
+        AND hi.inspection_id IS NOT NULL
+    </select>
+
+    <!-- 공통 검사 결과 조회 (HUMAN) -->
+    <select id="getHumanInspectionResult" resultMap="InspectionResultMap" parameterType="long">
+        SELECT *
+        FROM inspection
+        WHERE product_id = #{productId}
+        AND inspect_method = 'Human'
+        FETCH FIRST 1 ROWS ONLY
+    </select>
+
     <!-- productId 에 해당하는 상품 존재하는지 확인 -->
     <select id="existsByProductId" resultType="boolean">
         SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
@@ -241,6 +440,5 @@
         FROM product
         WHERE product_id = #{productId}
     </select>
-
 
 </mapper>

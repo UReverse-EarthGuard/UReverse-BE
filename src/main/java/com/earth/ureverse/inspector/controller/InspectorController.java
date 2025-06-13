@@ -3,13 +3,13 @@ package com.earth.ureverse.inspector.controller;
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.inspector.dto.request.ProductInspectionRequestDto;
+import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 import com.earth.ureverse.inspector.service.InspectorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/inspectors")
@@ -55,6 +54,14 @@ public class InspectorController {
             @Valid @RequestBody ProductInspectionRequestDto dto) {
         inspectorService.inspectProduct(userDetails.getUserId(), dto);
         return ResponseEntity.ok(CommonResponseEntity.success("검사 완료"));
+    }
+
+    // 검수 완료된 상품 상세 조회
+    @GetMapping("/products/{productId}/inspected")
+    public ResponseEntity<CommonResponseEntity<Object>> getInspectedProductDetail(
+            @PathVariable Long productId) {
+        ProductInspectedDetailDto detail = inspectorService.getInspectedProductDetail(productId);
+        return ResponseEntity.ok(CommonResponseEntity.success(detail));
     }
 
 }

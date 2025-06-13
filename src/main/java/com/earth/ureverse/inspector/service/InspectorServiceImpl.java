@@ -5,11 +5,11 @@ import com.earth.ureverse.global.common.exception.NotFoundException;
 import com.earth.ureverse.global.mapper.ProductMapper;
 import com.earth.ureverse.global.util.ProductValidator;
 import com.earth.ureverse.inspector.dto.request.ProductInspectionRequestDto;
+import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,4 +76,15 @@ public class InspectorServiceImpl implements InspectorService{
         productMapper.updateProductAfterInspection(dto.getProductId(), dto.getGrade(), paidPoint, status, inspectorId);
     }
 
+    public ProductInspectedDetailDto getInspectedProductDetail(Long productId) {
+        // 상품 확인
+        productValidator.validateProductExists(productId);
+        productValidator.validateProductSecondInspected(productId);
+
+        ProductInspectedDetailDto dto = productMapper.getInspectedProductDetail(productId);
+        if (dto == null) {
+            throw new NotFoundException("검수 완료된 상품을 찾을 수 없습니다: productId = " + productId);
+        }
+        return dto;
+    }
 }
