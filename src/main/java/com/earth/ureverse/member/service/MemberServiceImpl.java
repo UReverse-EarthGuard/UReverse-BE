@@ -10,8 +10,11 @@ import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryResponseDto;
+import com.earth.ureverse.member.dto.response.SalesHistoryListResponseDto;
+import com.earth.ureverse.member.dto.response.SalesHistoryResponseDto;
 import com.earth.ureverse.member.mapper.MemberMapper;
 import com.earth.ureverse.member.mapper.PointMapper;
+import com.earth.ureverse.member.mapper.SalesMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +33,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
     private final PointMapper pointMapper;
+    private final SalesMapper salesMapper;
 
     @Override
     public void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto) {
@@ -120,6 +124,38 @@ public class MemberServiceImpl implements MemberService {
         int totalPoint = pointMapper.getTotalPoint(userId);
 
         return new PointHistoryListResponseDto(totalPoint, pointHistories, newLastCreatedAt, newLastProductId);
+    }
+
+    @Override
+    public SalesHistoryListResponseDto getSalesHistory(Long userId, int limit, String lastCreatedAt, Long lastProductId) {
+        AuthenticatedUser authenticatedUser = authMapper.findByUserId(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+
+        if (!"active".equalsIgnoreCase(authenticatedUser.getIsActive())) {
+            throw new AlreadyWithdrawnException();
+        }
+
+        // limit 유효성 검사
+        if (limit <= 0) {
+            throw new IllegalParameterException("limit은 1 이상의 값이어야 합니다.");
+        }
+
+        // 날짜 포맷 유효성 검사 (커서 사용 시)
+        if (lastCreatedAt != null && !isValidDateTimeFormat(lastCreatedAt)) {
+            throw new IllegalParameterException("lastCreatedAt의 형식이 잘못되었습니다. (예: 2025-06-13 14:00:00)");
+        }
+
+        List<SalesHistoryResponseDto> salesHistory = salesMapper.getSalesHistory(userId, limit, lastCreatedAt, lastProductId);
+        String newLastCreatedAt = null;
+        Long newLastProductId = null;
+
+        if (!salesHistory.isEmpty()) {
+            SalesHistoryResponseDto lastItem = salesHistory.get(salesHistory.size() - 1);
+            newLastCreatedAt = lastItem.getCreatedAt();
+            newLastProductId = lastItem.getProductId();
+        }
+
+        return new SalesHistoryListResponseDto(salesHistory, newLastCreatedAt, newLastProductId);
     }
 
     // 유효한 날짜 형식인지 확인 (yyyy-MM-dd HH:mm:ss)

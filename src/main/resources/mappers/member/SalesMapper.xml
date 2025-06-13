@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.earth.ureverse.member.mapper.SalesMapper">
+
+    <select id="getSalesHistory" resultType="com.earth.ureverse.member.dto.response.SalesHistoryResponseDto">
+        SELECT
+            P.PAID_POINT AS POINT,
+            P.PRODUCT_ID AS PRODUCTID,
+            B.NAME AS BRANDNAME,
+            C.MAIN_NAME AS CATEGORYMAINNAME,
+            C.SUB_NAME AS CATEGORYSUBNAME,
+            P.STATUS,
+            TO_CHAR(P.CREATED_AT, 'YYYY-MM-DD HH24:MI:SS') AS CREATEDAT
+        FROM PRODUCT P
+            JOIN BRAND B ON P.BRAND_ID = B.BRAND_ID
+            JOIN CATEGORY C ON P.CATEGORY_ID = C.CATEGORY_ID
+        WHERE USER_ID = #{userId}
+        <if test="lastCreatedAt != null and lastProductId != null">
+            <![CDATA[
+            AND (P.CREATED_AT < TO_DATE(#{lastCreatedAt}, 'YYYY-MM-DD HH24:MI:SS')
+                OR (P.CREATED_AT = TO_DATE(#{lastCreatedAt}, 'YYYY-MM-DD HH24:MI:SS')
+                    AND p.product_id < #{lastProductId}
+                )
+            )
+            ]]>
+        </if>
+        ORDER BY P.CREATED_AT DESC, P.PRODUCT_ID DESC
+        FETCH FIRST #{limit} ROWS ONLY
+    </select>
+
+</mapper>
