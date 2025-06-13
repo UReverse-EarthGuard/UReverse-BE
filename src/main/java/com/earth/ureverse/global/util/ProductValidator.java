@@ -36,13 +36,16 @@ public class ProductValidator {
     }
 
     public void validateProductFinish(Long productId) {
-        String status = productMapper.getProductStatus(productId);
-        if (status == null) {
-            throw new BadRequestException("상품 상태를 조회할 수 없습니다: productId = " + productId);
-        }
-
+        String status = validateProductStatus(productId);
         if (!status.equals("FINISH")) {
             throw new BadRequestException("상품 상태가 FINISH가 아닙니다. 현재 상태: " + status);
+        }
+    }
+
+    public void validateProductSecondInspect(Long productId) {
+        String status = validateProductStatus(productId);
+        if (!status.equals("SECOND_INSPECT")) {
+            throw new BadRequestException("상품 상태가 SECOND_INSPECT가 아닙니다. 현재 상태: " + status);
         }
     }
 

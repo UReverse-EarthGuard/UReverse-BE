@@ -6,15 +6,19 @@ import com.earth.ureverse.admin.dto.request.ActiveMemberSearchRequest;
 import com.earth.ureverse.admin.dto.response.*;
 import com.earth.ureverse.admin.service.AdminProductService;
 import com.earth.ureverse.admin.service.AdminUserService;
+import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.global.common.response.PaginationResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Admin", description = "관리자 서비스 API 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admins")
@@ -60,4 +64,14 @@ public class AdminController {
     ) {
         return CommonResponseEntity.success(adminProductService.getDashBoardSummary(date));
     }
+
+    @PostMapping("/products/{productId}/pickup")
+    public CommonResponseEntity<String> requestPickup(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable Long productId
+    ) {
+        adminProductService.requestPickup(customUserDetails, productId);
+        return CommonResponseEntity.success("수거 요청이 등록되었습니다.");
+    }
+
 }

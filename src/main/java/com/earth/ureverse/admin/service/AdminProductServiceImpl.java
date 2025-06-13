@@ -3,6 +3,7 @@ package com.earth.ureverse.admin.service;
 import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.response.*;
+import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.PaginationResponse;
 import com.earth.ureverse.global.mapper.ProductMapper;
 import com.earth.ureverse.global.util.ProductValidator;
@@ -21,6 +22,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     private final ProductMapper productMapper;
     private final ProductValidator productValidator;
+    private final ProductStatusAsyncService productStatusAsyncService;
 
     @Override
     public PaginationResponse<FinishProductResponse> getFinishProducts(ProductSearchRequest request) {
@@ -65,6 +67,18 @@ public class AdminProductServiceImpl implements AdminProductService {
         List<String> images = productMapper.getProductImages(productId);
         product.setImages(images);
         return new PickupProductDetailResponse(product, aiResult, inspectorResult, delivery, grade);
+    }
+
+    @Override
+    public void requestPickup(CustomUserDetails customUserDetails, Long productId) {
+        Long adminId = customUserDetails.getUserId();
+
+        productValidator.validateProductExists(productId);
+        productValidator.validateProductSecondInspect(productId);
+
+        productStatusAsyncService.updateStatus(productId, "DELIVERY_REQUEST", adminId); //1차 배송 요청으로 상태 변경
+
+        productStatusAsyncService.updateStatusWithDelay(productId, adminId);
     }
 
     @Override

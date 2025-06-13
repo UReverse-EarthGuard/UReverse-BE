@@ -518,6 +518,15 @@
         </if>
     </select>
 
+    <!--  상품 상태 변경  -->
+    <update id="updateProductStatus">
+        UPDATE product
+        SET status = #{status},
+            updated_at = #{now},
+            updated_by = #{updatedBy}
+        WHERE product_id = #{productId}
+    </update>
+
     <!-- 수거 요청 대기 건수 (SECOND_INSPECT 상태 상품 수) -->
     <select id="getPickupRequest" resultType="int">
         SELECT COUNT(*)
