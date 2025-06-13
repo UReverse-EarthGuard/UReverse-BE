@@ -34,7 +34,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/**" ,    // 로그인, 회원가입
-                                "/api/v1/home"
+                                "/api/v1/home",
+                                // Swagger
+                                "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
+                                "/api-docs/**","/swagger-resources/**","/webjars/**","/configuration/**"
                         ).permitAll()
                         .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/inspectors/**").hasRole("INSPECTOR")

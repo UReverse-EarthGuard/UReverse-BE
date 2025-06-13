@@ -7,6 +7,7 @@ import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
 import com.earth.ureverse.member.service.MemberService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Member", description = "고객 서비스 API 입니다.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/members")
