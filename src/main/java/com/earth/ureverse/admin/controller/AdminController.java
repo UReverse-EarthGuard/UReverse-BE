@@ -82,4 +82,13 @@ public class AdminController {
         return CommonResponseEntity.success(adminProductService.getInspectionResultRatio(date, method));
     }
 
+
+
+    @GetMapping("/dash-boards/inspection-defect/{date}/{method}")
+    public CommonResponseEntity<DashBoardInspectionDefectRatioResponse> getInspectionDefectRatio(
+            @PathVariable String date,
+            @PathVariable String method
+    ){
+        return CommonResponseEntity.success(adminProductService.getInspectionDefectRatio(date, method));
+    }
 }
