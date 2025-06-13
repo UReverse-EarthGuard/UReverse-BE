@@ -569,4 +569,41 @@
     </select>
 
 
+    <!--검수 결함유형 통계-->
+    <select id="getInspectionDefectRatio" resultType="com.earth.ureverse.admin.dto.response.DashBoardInspectionDefectRatioResponse">
+        SELECT
+            SUM(CASE WHEN i.is_torn = 'Y' THEN 1 ELSE 0 END) AS tornCount,
+            SUM(CASE WHEN i.has_stain = 'Y' THEN 1 ELSE 0 END) AS stainCount,
+            SUM(CASE WHEN i.has_fading = 'Y' THEN 1 ELSE 0 END) AS fadingCount,
+            SUM(CASE WHEN i.is_stretched = 'Y' THEN 1 ELSE 0 END) AS stretchedCount,
+            SUM(CASE WHEN i.other_defect = 'Y' THEN 1 ELSE 0 END) AS otherCount
+        FROM inspection i
+        WHERE TRUNC(i.created_at) = TO_DATE(#{date}, 'YYYY-MM-DD')
+            AND LOWER(i.inspect_method) = LOWER(#{method})
+    </select>
+
+    <!-- 일별 수거 건수 집계 -->
+    <select id="getFinishStatsByDay" resultType="com.earth.ureverse.admin.dto.response.DashBoardFinishProductResponse">
+        SELECT
+            TO_CHAR(TRUNC(updated_at), 'YYYY-MM-DD') AS baseDate,
+            COUNT(*) AS finishCount
+        FROM product
+        WHERE status = 'FINISH'
+            AND updated_at >= TRUNC(SYSDATE) - #{days}
+        GROUP BY TRUNC(updated_at)
+        ORDER BY baseDate ASC
+    </select>
+
+    <!-- 월별 수거 건수 집계 -->
+    <select id="getFinishStatsByMonth" resultType="com.earth.ureverse.admin.dto.response.DashBoardFinishProductResponse">
+        SELECT
+        TO_CHAR(updated_at, 'YYYY-MM') AS baseDate,
+        COUNT(*) AS finishCount
+        FROM product
+        WHERE status = 'FINISH'
+        AND updated_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -#{months})
+        GROUP BY TO_CHAR(updated_at, 'YYYY-MM')
+        ORDER BY baseDate ASC
+    </select>
+
 </mapper>

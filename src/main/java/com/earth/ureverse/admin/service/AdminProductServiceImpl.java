@@ -122,6 +122,54 @@ public class AdminProductServiceImpl implements AdminProductService {
         if (!("AI".equalsIgnoreCase(method) || "Human".equalsIgnoreCase(method))) {
             throw new IllegalArgumentException("검수 방식은 AI 또는 Human이어야 합니다.");
         }
+
+        DashBoardInspectionResultRatioResponse response = productMapper.getInspectionResultRatio(date, method);
+        response.setPassRatio(calcRatio(response.getPassCount(), response.getTotalCount()));
+        response.setFailRatio(calcRatio(response.getFailCount(), response.getTotalCount()));
+
+        return response;
+    }
+
+    @Override
+    public DashBoardInspectionDefectRatioResponse getInspectionDefectRatio(String date, String method) {
+        if(!isValidDateTimeFormat(date)){
+            throw new IllegalArgumentException("date형식이 아닙니다.");
+        }
+        if (!("AI".equalsIgnoreCase(method) || "Human".equalsIgnoreCase(method))) {
+            throw new IllegalArgumentException("검수 방식은 AI 또는 Human이어야 합니다.");
+        }
+
+        DashBoardInspectionDefectRatioResponse response = productMapper.getInspectionDefectRatio(date, method);
+        int totalDefectCount = response.getTornCount() + response.getStainCount() + response.getFadingCount() +
+                response.getStretchedCount() + response.getOtherCount();
+        response.setTornRatio(calcRatio(response.getTornCount(), totalDefectCount));
+        response.setStainRatio(calcRatio(response.getStainCount(), totalDefectCount));
+        response.setFadingRatio(calcRatio(response.getFadingCount(), totalDefectCount));
+        response.setStretchedRatio(calcRatio(response.getStretchedCount(), totalDefectCount));
+        response.setOtherRatio(calcRatio(response.getOtherCount(), totalDefectCount));
+
+        return response;
+    }
+
+    private double calcRatio(Integer count, Integer total) {
+        if (count == null || total==null || total == 0) return 0.0;
+        return Math.round((count * 100.0 / total) * 100) / 100.0;
         return productMapper.getInspectionResultRatio(date, method);
+    }
+
+    @Override
+    public List<DashBoardFinishProductResponse> getFinishStats(String range) {
+        switch(range.toUpperCase()){
+            case "WEEK": //최근 일주일
+                return productMapper.getFinishStatsByDay(6);
+            case "MONTH": //최근 한 달
+                return productMapper.getFinishStatsByDay(29);
+            case "HALFYEAR": //최근 6개월
+                return productMapper.getFinishStatsByMonth(5);
+            case "YEAR": //최근 1년
+                return productMapper.getFinishStatsByMonth(11);
+            default:
+                throw new IllegalArgumentException("range는 WEEK/MONTH/HALFYEAR/YEAR 중 하나입니다.");
+        }
     }
 }
