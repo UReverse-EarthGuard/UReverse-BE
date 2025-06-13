@@ -3,6 +3,7 @@ package com.earth.ureverse.admin.controller;
 import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.response.FinishProductResponse;
+import com.earth.ureverse.admin.dto.response.PickupProductDetailResponse;
 import com.earth.ureverse.admin.dto.response.PickupProductResponse;
 import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
 import com.earth.ureverse.admin.service.AdminProductService;
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,6 +40,11 @@ public class AdminController {
     @GetMapping("/products/finish/{productId}")
     public CommonResponseEntity<ProductInspectionResultResponse> getFinishProductDetail(@PathVariable Long productId) {
         return CommonResponseEntity.success(adminProductService.getFinishProductDetail(productId));
+    }
+
+    @GetMapping("/products/pickup/{productId}")
+    public CommonResponseEntity<PickupProductDetailResponse> getPickupProductDetail(@PathVariable Long productId) {
+        return CommonResponseEntity.success(adminProductService.getPickupProductDetail(productId));
     }
 
 }

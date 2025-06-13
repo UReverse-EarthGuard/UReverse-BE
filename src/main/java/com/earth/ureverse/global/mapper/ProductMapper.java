@@ -2,11 +2,9 @@ package com.earth.ureverse.global.mapper;
 
 import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
-import com.earth.ureverse.admin.dto.response.FinishProductResponse;
+import com.earth.ureverse.admin.dto.response.*;
 import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
-import com.earth.ureverse.admin.dto.response.PickupProductResponse;
-import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -32,11 +30,19 @@ public interface ProductMapper {
 
     long countPickupProducts(PickupSearchRequest request);
 
-    List<PickupProductResponse> getPickupProducts();
-
-    ProductInspectionResultResponse getFinishProductDetail(@Param("productId") Long productId);
-
     List<String> getProductImages(Long productId);
+
+
+    ProductDetailResponse getProductDetail(@Param("productId") Long productId);
+
+
+    InspectionResultResponse getAiInspection(@Param("productId") Long productId);
+
+
+    InspectionResultResponse getHumanInspection(@Param("productId") Long productId);
+
+
+    String getProductGrade(@Param("productId") Long productId);
 
     ProductInspectionDetailDto getPendingProductDetail(@Param("productId") Long productId);
 
@@ -45,4 +51,6 @@ public interface ProductMapper {
     boolean existsByProductId(@Param("productId") Long productId);
 
     String getProductStatus(@Param("productId") Long productId);
+
+    DeliveryResponse getDelivery(Long productId);
 }
