@@ -22,7 +22,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @DeleteMapping
-    public CommonResponseEntity<Void> withdraw(
+    public CommonResponseEntity<String> withdraw(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody WithdrawRequestDto withdrawRequestDto,
             HttpServletResponse response
@@ -38,25 +38,25 @@ public class MemberController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
 
-        return CommonResponseEntity.success(null);
+        return CommonResponseEntity.success("탈퇴 처리되었습니다.");
     }
 
     @PatchMapping
-    public CommonResponseEntity<Void> updateMember(
+    public CommonResponseEntity<String> updateMember(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody UpdateMemberRequestDto updateMemberRequestDto
     ) {
         memberService.updateMember(customUserDetails.getUserId(), updateMemberRequestDto);
-        return CommonResponseEntity.success(null);
+        return CommonResponseEntity.success("회원 정보가 수정되었습니다.");
     }
 
     @PatchMapping("/password")
-    public CommonResponseEntity<Void> changePassword(
+    public CommonResponseEntity<String> changePassword(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody ChangePasswordRequestDto changePasswordRequestDto
     ) {
         memberService.changePassword(customUserDetails.getUserId(), changePasswordRequestDto);
-        return CommonResponseEntity.success(null);
+        return CommonResponseEntity.success("비밀번호가 변경되었습니다.");
     }
 
 }
