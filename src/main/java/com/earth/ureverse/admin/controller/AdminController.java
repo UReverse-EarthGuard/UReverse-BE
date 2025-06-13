@@ -74,6 +74,14 @@ public class AdminController {
         return CommonResponseEntity.success("수거 요청이 등록되었습니다.");
     }
 
+    @GetMapping("/dash-boards/inspection-result/{date}/{method}")
+    public CommonResponseEntity<DashBoardInspectionResultRatioResponse> getInspectionResultRatio(
+            @PathVariable String date,
+            @PathVariable String method
+    ){
+        return CommonResponseEntity.success(adminProductService.getInspectionResultRatio(date, method));
+    }
+
 
 
     @GetMapping("/dash-boards/inspection-defect/{date}/{method}")

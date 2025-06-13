@@ -115,6 +115,22 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     @Override
+    public DashBoardInspectionResultRatioResponse getInspectionResultRatio(String date, String method) {
+        if(!isValidDateTimeFormat(date)){
+            throw new IllegalArgumentException("date형식이 아닙니다.");
+        }
+        if (!("AI".equalsIgnoreCase(method) || "Human".equalsIgnoreCase(method))) {
+            throw new IllegalArgumentException("검수 방식은 AI 또는 Human이어야 합니다.");
+        }
+
+        DashBoardInspectionResultRatioResponse response = productMapper.getInspectionResultRatio(date, method);
+        response.setPassRatio(calcRatio(response.getPassCount(), response.getTotalCount()));
+        response.setFailRatio(calcRatio(response.getFailCount(), response.getTotalCount()));
+
+        return response;
+    }
+
+    @Override
     public DashBoardInspectionDefectRatioResponse getInspectionDefectRatio(String date, String method) {
         if(!isValidDateTimeFormat(date)){
             throw new IllegalArgumentException("date형식이 아닙니다.");
@@ -134,8 +150,8 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         return response;
     }
-    private double calcRatio(Integer count, int total) {
-        if (count == null || total == 0) return 0.0;
+    private double calcRatio(Integer count, Integer total) {
+        if (count == null || total==null || total == 0) return 0.0;
         return Math.round((count * 100.0 / total) * 100) / 100.0;
     }
 }

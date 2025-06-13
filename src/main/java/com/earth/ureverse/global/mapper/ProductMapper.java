@@ -78,5 +78,7 @@ public interface ProductMapper {
 
     List<DashBoardBrandResponse> getTopBrandsOfWeek(String startDate, String endDate);
 
+    DashBoardInspectionResultRatioResponse getInspectionResultRatio(String date, String method);
+
     DashBoardInspectionDefectRatioResponse getInspectionDefectRatio(String date, String method);
 }

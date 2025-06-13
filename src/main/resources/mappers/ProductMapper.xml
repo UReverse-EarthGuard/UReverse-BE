@@ -557,6 +557,18 @@
         FETCH FIRST 3 ROWS ONLY
     </select>
 
+    <!--검수 결과 통계 (Pass/Fail)-->
+    <select id="getInspectionResultRatio" resultType="com.earth.ureverse.admin.dto.response.DashBoardInspectionResultRatioResponse">
+        SELECT
+            COUNT(*) AS totalCount,
+            SUM(CASE WHEN i.result = 'PASS' THEN 1 ELSE 0 END) AS passCount,
+            SUM(CASE WHEN i.result = 'FAIL' THEN 1 ELSE 0 END) AS failCount
+        FROM inspection i
+        WHERE TRUNC(i.created_at) = TO_DATE(#{date}, 'YYYY-MM-DD')
+            AND LOWER(i.inspect_method) = LOWER(#{method})
+    </select>
+
+
     <!--검수 결함유형 통계-->
     <select id="getInspectionDefectRatio" resultType="com.earth.ureverse.admin.dto.response.DashBoardInspectionDefectRatioResponse">
         SELECT
