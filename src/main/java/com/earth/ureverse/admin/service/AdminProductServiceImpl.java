@@ -2,12 +2,10 @@ package com.earth.ureverse.admin.service;
 
 import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
-import com.earth.ureverse.admin.dto.response.FinishProductResponse;
-import com.earth.ureverse.admin.dto.response.PickupProductResponse;
+import com.earth.ureverse.admin.dto.response.*;
 import com.earth.ureverse.global.common.response.PaginationResponse;
-import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
-import com.earth.ureverse.global.common.exception.NotFoundException;
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.global.util.ProductValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +16,7 @@ import java.util.List;
 public class AdminProductServiceImpl implements AdminProductService {
 
     private final ProductMapper productMapper;
+    private final ProductValidator productValidator;
 
     @Override
     public PaginationResponse<FinishProductResponse> getFinishProducts(ProductSearchRequest request) {
@@ -35,12 +34,32 @@ public class AdminProductServiceImpl implements AdminProductService {
 
     @Override
     public ProductInspectionResultResponse getFinishProductDetail(Long productId) {
-        ProductInspectionResultResponse result = productMapper.getFinishProductDetail(productId);
-        if(result == null || result.getProduct() ==null){
-            throw new NotFoundException("해당 productId의 상품을 찾을 수 없습니다.");
-        }
+        productValidator.validateProductExists(productId);
+        productValidator.validateProductFinish(productId);
+
+        ProductDetailResponse product = productMapper.getProductDetail(productId);
+        InspectionResultResponse aiResult = productMapper.getAiInspection(productId);
+        InspectionResultResponse inspectorResult = productMapper.getHumanInspection(productId);
+        String grade = productMapper.getProductGrade(productId);
+
         List<String> images = productMapper.getProductImages(productId);
-        result.getProduct().setImages(images);
-        return result;
+        product.setImages(images);
+        return new ProductInspectionResultResponse(product, aiResult, inspectorResult, grade);
+    }
+
+    @Override
+    public PickupProductDetailResponse getPickupProductDetail(Long productId) {
+        productValidator.validateProductExists(productId);
+        productValidator.validateProductPickup(productId);
+
+        ProductDetailResponse product = productMapper.getProductDetail(productId);
+        InspectionResultResponse aiResult = productMapper.getAiInspection(productId);
+        InspectionResultResponse inspectorResult = productMapper.getHumanInspection(productId);
+        DeliveryResponse delivery = productMapper.getDelivery(productId);
+        String grade = productMapper.getProductGrade(productId);
+
+        List<String> images = productMapper.getProductImages(productId);
+        product.setImages(images);
+        return new PickupProductDetailResponse(product, aiResult, inspectorResult, delivery, grade);
     }
 }

@@ -5,6 +5,7 @@ import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.request.ActiveMemberSearchRequest;
 import com.earth.ureverse.admin.dto.response.ActiveMemberResponse;
 import com.earth.ureverse.admin.dto.response.FinishProductResponse;
+import com.earth.ureverse.admin.dto.response.PickupProductDetailResponse;
 import com.earth.ureverse.admin.dto.response.PickupProductResponse;
 import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
 import com.earth.ureverse.admin.service.AdminProductService;
@@ -43,6 +44,11 @@ public class AdminController {
     @GetMapping("/products/finish/{productId}")
     public CommonResponseEntity<ProductInspectionResultResponse> getFinishProductDetail(@PathVariable Long productId) {
         return CommonResponseEntity.success(adminProductService.getFinishProductDetail(productId));
+    }
+
+    @GetMapping("/products/pickup/{productId}")
+    public CommonResponseEntity<PickupProductDetailResponse> getPickupProductDetail(@PathVariable Long productId) {
+        return CommonResponseEntity.success(adminProductService.getPickupProductDetail(productId));
     }
 
     @GetMapping("/users")
