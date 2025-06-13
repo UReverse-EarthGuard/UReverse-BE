@@ -9,6 +9,10 @@ import com.earth.ureverse.global.util.ProductValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -61,5 +65,37 @@ public class AdminProductServiceImpl implements AdminProductService {
         List<String> images = productMapper.getProductImages(productId);
         product.setImages(images);
         return new PickupProductDetailResponse(product, aiResult, inspectorResult, delivery, grade);
+    }
+
+    @Override
+    public DashBoardSummaryResponse getDashBoardSummary(String date) {
+        if(!isValidDateTimeFormat(date)){
+            throw new IllegalArgumentException("date형식이 아닙니다.");
+        }
+        Integer pickupRequest = productMapper.getPickupRequest(); //현재 SECOND_INSPECT인_건수
+        Long totalPaidPoint = productMapper.getTotalPaidPoint(date); //해당 날짜의 지급포인트 총합
+        LocalDate[] range = getWeekRange(date);
+        LocalDate startOfWeek = range[0];
+        LocalDate endOfWeek = range[1];
+        List<DashBoardBrandResponse> topBrands = productMapper.getTopBrandsOfWeek(startOfWeek.toString(), endOfWeek.toString());
+
+        return new DashBoardSummaryResponse(pickupRequest, totalPaidPoint, topBrands);
+    }
+    private Boolean isValidDateTimeFormat(String date){
+        if (date == null) return false;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            LocalDate.parse(date, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+    private LocalDate[] getWeekRange(String dateStr){
+        LocalDate date = LocalDate.parse(dateStr);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        LocalDate startOfWeek = date.minusDays(dayOfWeek.getValue());
+        LocalDate endOfWeek = startOfWeek.plusDays(6);
+        return new LocalDate[]{startOfWeek, endOfWeek}; //월~일
     }
 }

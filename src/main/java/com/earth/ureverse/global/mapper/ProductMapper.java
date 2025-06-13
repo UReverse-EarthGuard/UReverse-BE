@@ -69,4 +69,9 @@ public interface ProductMapper {
     int countPendingInspectionProductsByInspectorAndKeyword(@Param("inspectorId") Long inspectorId,
                                                             @Param("keyword") String keyword);
 
+    Integer getPickupRequest();
+
+    Long getTotalPaidPoint(String date);
+
+    List<DashBoardBrandResponse> getTopBrandsOfWeek(String startDate, String endDate);
 }

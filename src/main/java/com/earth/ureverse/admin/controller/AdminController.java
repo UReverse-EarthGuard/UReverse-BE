@@ -3,11 +3,7 @@ package com.earth.ureverse.admin.controller;
 import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.request.ActiveMemberSearchRequest;
-import com.earth.ureverse.admin.dto.response.ActiveMemberResponse;
-import com.earth.ureverse.admin.dto.response.FinishProductResponse;
-import com.earth.ureverse.admin.dto.response.PickupProductDetailResponse;
-import com.earth.ureverse.admin.dto.response.PickupProductResponse;
-import com.earth.ureverse.admin.dto.response.ProductInspectionResultResponse;
+import com.earth.ureverse.admin.dto.response.*;
 import com.earth.ureverse.admin.service.AdminProductService;
 import com.earth.ureverse.admin.service.AdminUserService;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
@@ -56,5 +52,12 @@ public class AdminController {
             @RequestBody ActiveMemberSearchRequest request
     ) {
         return CommonResponseEntity.success(adminUserService.getActiveUsers(request));
+    }
+
+    @GetMapping("/dash-boards/summary/{date}")
+    public CommonResponseEntity<DashBoardSummaryResponse> getDashBoardSummary(
+            @PathVariable String date
+    ) {
+        return CommonResponseEntity.success(adminProductService.getDashBoardSummary(date));
     }
 }

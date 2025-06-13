@@ -518,4 +518,34 @@
         </if>
     </select>
 
+    <!-- 수거 요청 대기 건수 (SECOND_INSPECT 상태 상품 수) -->
+    <select id="getPickupRequest" resultType="int">
+        SELECT COUNT(*)
+        FROM product
+        WHERE status = 'SECOND_INSPECT'
+    </select>
+
+    <!-- 특정 날짜의 지급 포인트 총합 -->
+    <select id="getTotalPaidPoint" resultType="long">
+        SELECT NVL(SUM(paid_point), 0)
+        FROM product
+        WHERE status = 'FINISH'
+            AND TRUNC(updated_at) = TO_DATE(#{date}, 'YYYY-MM-DD')
+    </select>
+
+
+    <!-- 3. 특정 주간의 인기 브랜드 TOP3 -->
+    <select id="getTopBrandsOfWeek" resultType="com.earth.ureverse.admin.dto.response.DashBoardBrandResponse">
+        SELECT b.name AS name,
+            COUNT(*) AS salesCount
+        FROM product p
+            JOIN brand b ON p.brand_id = b.brand_id
+        WHERE p.status = 'FINISH'
+            AND TRUNC(p.updated_at) BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                                        AND TO_DATE(#{endDate}, 'YYYY-MM-DD')
+        GROUP BY b.name
+        ORDER BY salesCount DESC
+        FETCH FIRST 3 ROWS ONLY
+    </select>
+
 </mapper>
