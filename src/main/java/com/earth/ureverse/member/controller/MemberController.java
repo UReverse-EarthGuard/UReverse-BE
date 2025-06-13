@@ -5,6 +5,7 @@ import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
+import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
 import com.earth.ureverse.member.service.MemberService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -57,6 +58,19 @@ public class MemberController {
     ) {
         memberService.changePassword(customUserDetails.getUserId(), changePasswordRequestDto);
         return CommonResponseEntity.success("비밀번호가 변경되었습니다.");
+    }
+
+    @GetMapping("/points")
+    public CommonResponseEntity<PointHistoryListResponseDto> getPointHistories(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String lastCreatedAt,
+            @RequestParam(required = false) Long lastProductId
+    ) {
+        PointHistoryListResponseDto pointHistoryListResponseDto = memberService.getPointHistories(
+                customUserDetails.getUserId(), limit, lastCreatedAt, lastProductId
+        );
+        return  CommonResponseEntity.success(pointHistoryListResponseDto);
     }
 
 }
