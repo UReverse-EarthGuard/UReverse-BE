@@ -55,4 +55,10 @@
         AND u.isactive = 'active'
     </select>
 
+    <select id="findMyInfoByUserId" parameterType="long" resultType="com.earth.ureverse.member.dto.response.MemberInfoResponseDto">
+        SELECT USER_ID AS userId, NAME, EMAIL, PHONE, ROLE
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
 </mapper>

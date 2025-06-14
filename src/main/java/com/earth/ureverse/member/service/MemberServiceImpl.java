@@ -8,6 +8,7 @@ import com.earth.ureverse.global.common.exception.PasswordMismatchException;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
+import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryResponseDto;
 import com.earth.ureverse.member.mapper.MemberMapper;
@@ -120,6 +121,11 @@ public class MemberServiceImpl implements MemberService {
         int totalPoint = pointMapper.getTotalPoint(userId);
 
         return new PointHistoryListResponseDto(totalPoint, pointHistories, newLastCreatedAt, newLastProductId);
+    }
+
+    @Override
+    public MemberInfoResponseDto getMyInfo(Long userId) {
+         return memberMapper.findMyInfoByUserId(userId);
     }
 
     // 유효한 날짜 형식인지 확인 (yyyy-MM-dd HH:mm:ss)
