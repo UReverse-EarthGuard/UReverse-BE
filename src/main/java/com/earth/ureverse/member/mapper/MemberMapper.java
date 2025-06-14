@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MemberMapper {
@@ -24,5 +25,7 @@ public interface MemberMapper {
     long countActiveUsers(ActiveMemberSearchRequest request);
 
     MemberInfoResponseDto findMyInfoByUserId(@Param("userId") Long userId);
+
+    List<Map<String, Object>> countProductStatus(@Param("userId") Long userId);
 
 }

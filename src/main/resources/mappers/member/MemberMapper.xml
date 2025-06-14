@@ -61,4 +61,11 @@
         WHERE USER_ID = #{userId}
     </select>
 
+    <select id="countProductStatus" parameterType="long" resultType="map">
+        SELECT STATUS, COUNT(*) AS VALUE
+        FROM PRODUCT
+        WHERE USER_ID = #{userId}
+        GROUP BY STATUS
+    </select>
+
 </mapper>
