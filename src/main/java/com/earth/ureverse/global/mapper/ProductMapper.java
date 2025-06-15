@@ -81,4 +81,8 @@ public interface ProductMapper {
     DashBoardInspectionResultRatioResponse getInspectionResultRatio(String date, String method);
 
     DashBoardInspectionDefectRatioResponse getInspectionDefectRatio(String date, String method);
+
+    List<DashBoardFinishProductResponse> getFinishStatsByDay(int days);
+
+    List<DashBoardFinishProductResponse> getFinishStatsByMonth(int months);
 }

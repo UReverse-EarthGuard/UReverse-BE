@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Admin", description = "관리자 서비스 API 입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -90,5 +92,11 @@ public class AdminController {
             @PathVariable String method
     ){
         return CommonResponseEntity.success(adminProductService.getInspectionDefectRatio(date, method));
+    }
+
+
+    @GetMapping("/dash-boards/finish-stats/{range}")
+    public CommonResponseEntity<List<DashBoardFinishProductResponse>> getFinishStats(@PathVariable String range){
+        return CommonResponseEntity.success(adminProductService.getFinishStats(range));
     }
 }

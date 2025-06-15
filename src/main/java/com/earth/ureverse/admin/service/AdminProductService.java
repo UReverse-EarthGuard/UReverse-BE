@@ -27,4 +27,6 @@ public interface AdminProductService {
     DashBoardInspectionResultRatioResponse getInspectionResultRatio(String date, String method);
 
     DashBoardInspectionDefectRatioResponse getInspectionDefectRatio(String date, String method);
+
+    List<DashBoardFinishProductResponse> getFinishStats(String range);
 }

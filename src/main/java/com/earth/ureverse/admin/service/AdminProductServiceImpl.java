@@ -154,4 +154,20 @@ public class AdminProductServiceImpl implements AdminProductService {
         if (count == null || total==null || total == 0) return 0.0;
         return Math.round((count * 100.0 / total) * 100) / 100.0;
     }
+
+    @Override
+    public List<DashBoardFinishProductResponse> getFinishStats(String range) {
+        switch(range.toUpperCase()){
+            case "WEEK": //최근 일주일
+                return productMapper.getFinishStatsByDay(6);
+            case "MONTH": //최근 한 달
+                return productMapper.getFinishStatsByDay(29);
+            case "HALFYEAR": //최근 6개월
+                return productMapper.getFinishStatsByMonth(5);
+            case "YEAR": //최근 1년
+                return productMapper.getFinishStatsByMonth(11);
+            default:
+                throw new IllegalArgumentException("range는 WEEK/MONTH/HALFYEAR/YEAR 중 하나입니다.");
+        }
+    }
 }
