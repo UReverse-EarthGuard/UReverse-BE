@@ -3,10 +3,12 @@ package com.earth.ureverse.member.mapper;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.admin.dto.request.ActiveMemberSearchRequest;
 import com.earth.ureverse.admin.dto.response.ActiveMemberResponse;
+import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MemberMapper {
@@ -21,4 +23,9 @@ public interface MemberMapper {
     List<ActiveMemberResponse> getActiveUsers(ActiveMemberSearchRequest request);
 
     long countActiveUsers(ActiveMemberSearchRequest request);
+
+    MemberInfoResponseDto findMyInfoByUserId(@Param("userId") Long userId);
+
+    List<Map<String, Object>> countProductStatus(@Param("userId") Long userId);
+
 }

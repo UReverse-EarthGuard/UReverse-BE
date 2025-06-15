@@ -55,4 +55,17 @@
         AND u.isactive = 'active'
     </select>
 
+    <select id="findMyInfoByUserId" parameterType="long" resultType="com.earth.ureverse.member.dto.response.MemberInfoResponseDto">
+        SELECT USER_ID AS userId, NAME, EMAIL, PHONE, ROLE
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <select id="countProductStatus" parameterType="long" resultType="map">
+        SELECT STATUS, COUNT(*) AS VALUE
+        FROM PRODUCT
+        WHERE USER_ID = #{userId}
+        GROUP BY STATUS
+    </select>
+
 </mapper>

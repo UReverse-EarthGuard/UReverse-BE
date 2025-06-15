@@ -5,9 +5,11 @@ import com.earth.ureverse.global.auth.mapper.AuthMapper;
 import com.earth.ureverse.global.common.exception.AlreadyWithdrawnException;
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.PasswordMismatchException;
+import com.earth.ureverse.global.enums.ProductStatus;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
+import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryResponseDto;
 import com.earth.ureverse.member.dto.response.SalesHistoryListResponseDto;
@@ -20,10 +22,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -150,6 +155,33 @@ public class MemberServiceImpl implements MemberService {
         if (lastCreatedAt != null && !isValidDateTimeFormat(lastCreatedAt)) {
             throw new IllegalParameterException("lastCreatedAt의 형식이 잘못되었습니다. (예: 2025-06-13 14:00:00)");
         }
+    }
+
+    @Override
+    public MemberInfoResponseDto getMyInfo(Long userId) {
+        MemberInfoResponseDto memberInfoResponseDto = memberMapper.findMyInfoByUserId(userId);
+        List<Map<String, Object>> rawList = memberMapper.countProductStatus(userId);
+        Map<String, Integer> statusMap = toKoreanStatusMap(rawList);
+        memberInfoResponseDto.setProductStatus(statusMap);
+
+        return memberInfoResponseDto;
+    }
+
+    private Map<String, Integer> toKoreanStatusMap(List<Map<String, Object>> rawList) {
+        Map<String, Integer> result = new LinkedHashMap<>();
+
+        for (ProductStatus status : ProductStatus.values()) {
+            result.put(status.getLabel(), 0);
+        }
+
+        for (Map<String, Object> row : rawList) {
+            String statusCode = (String) row.get("STATUS");
+            String label = ProductStatus.getLabelByCode(statusCode);
+            BigDecimal count = (BigDecimal) row.get("VALUE");
+            result.put(label, count.intValue());
+        }
+
+        return result;
     }
 
     // 유효한 날짜 형식인지 확인 (yyyy-MM-dd HH:mm:ss)

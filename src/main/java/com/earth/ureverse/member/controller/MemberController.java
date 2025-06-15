@@ -5,6 +5,7 @@ import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
+import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
 import com.earth.ureverse.member.dto.response.SalesHistoryListResponseDto;
 import com.earth.ureverse.member.service.MemberService;
@@ -64,7 +65,7 @@ public class MemberController {
     }
 
     @GetMapping("/points")
-    public CommonResponseEntity<PointHistoryListResponseDto> getPointHistory(
+    public CommonResponseEntity<PointHistoryListResponseDto> getPointHistories(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(required = false) String lastCreatedAt,
@@ -87,6 +88,12 @@ public class MemberController {
                 customUserDetails.getUserId(), limit, lastCreatedAt, lastProductId
         );
         return CommonResponseEntity.success(salesHistoryListResponseDto);
+    }
+
+    @GetMapping("/me")
+    public CommonResponseEntity<MemberInfoResponseDto> getMyInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        MemberInfoResponseDto memberInfoResponseDto = memberService.getMyInfo(customUserDetails.getUserId());
+        return CommonResponseEntity.success(memberInfoResponseDto);
     }
 
 }
