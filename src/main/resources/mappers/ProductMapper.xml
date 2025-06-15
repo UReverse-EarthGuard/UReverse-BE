@@ -587,7 +587,7 @@
         WITH date_range AS (
         SELECT TRUNC(SYSDATE) - (LEVEL - 1) AS day_date
         FROM dual
-        CONNECT BY LEVEL &lt;= #{days}
+        CONNECT BY LEVEL &lt;= #{days}+1
         )
         SELECT
         TO_CHAR(dr.day_date, 'YYYY-MM-DD') AS baseDate,
@@ -605,7 +605,7 @@
         WITH month_range AS (
         SELECT ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -(LEVEL - 1)) AS month_date
         FROM dual
-        CONNECT BY LEVEL &lt;= #{months}
+        CONNECT BY LEVEL &lt;= #{months}+1
         )
         SELECT
         TO_CHAR(mr.month_date, 'YYYY-MM') AS baseDate,
