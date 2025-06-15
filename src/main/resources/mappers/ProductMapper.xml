@@ -583,27 +583,40 @@
     </select>
 
     <!-- 일별 수거 건수 집계 -->
-    <select id="getFinishStatsByDay" resultType="com.earth.ureverse.admin.dto.response.DashBoardFinishProductResponse">
+    <select id="getFinishStatsByDay" parameterType="int" resultType="com.earth.ureverse.admin.dto.response.DashBoardFinishProductResponse">
+        WITH date_range AS (
+        SELECT TRUNC(SYSDATE) - (LEVEL - 1) AS day_date
+        FROM dual
+        CONNECT BY LEVEL &lt;= #{days}
+        )
         SELECT
-            TO_CHAR(TRUNC(updated_at), 'YYYY-MM-DD') AS baseDate,
-            COUNT(*) AS finishCount
-        FROM product
-        WHERE status = 'FINISH'
-            AND updated_at >= TRUNC(SYSDATE) - #{days}
-        GROUP BY TRUNC(updated_at)
+        TO_CHAR(dr.day_date, 'YYYY-MM-DD') AS baseDate,
+        NVL(COUNT(p.updated_at), 0) AS finishCount
+        FROM date_range dr
+        LEFT JOIN product p ON TRUNC(p.updated_at) = dr.day_date AND p.status = 'FINISH'
+        GROUP BY dr.day_date
         ORDER BY baseDate ASC
     </select>
 
+
+
     <!-- 월별 수거 건수 집계 -->
-    <select id="getFinishStatsByMonth" resultType="com.earth.ureverse.admin.dto.response.DashBoardFinishProductResponse">
+    <select id="getFinishStatsByMonth" parameterType="int" resultType="com.earth.ureverse.admin.dto.response.DashBoardFinishProductResponse">
+        WITH month_range AS (
+        SELECT ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -(LEVEL - 1)) AS month_date
+        FROM dual
+        CONNECT BY LEVEL &lt;= #{months}
+        )
         SELECT
-        TO_CHAR(updated_at, 'YYYY-MM') AS baseDate,
-        COUNT(*) AS finishCount
-        FROM product
-        WHERE status = 'FINISH'
-        AND updated_at >= ADD_MONTHS(TRUNC(SYSDATE, 'MM'), -#{months})
-        GROUP BY TO_CHAR(updated_at, 'YYYY-MM')
+        TO_CHAR(mr.month_date, 'YYYY-MM') AS baseDate,
+        NVL(COUNT(p.updated_at), 0) AS finishCount
+        FROM month_range mr
+        LEFT JOIN product p
+        ON TO_CHAR(p.updated_at, 'YYYY-MM') = TO_CHAR(mr.month_date, 'YYYY-MM')
+        AND p.status = 'FINISH'
+        GROUP BY mr.month_date
         ORDER BY baseDate ASC
     </select>
+
 
 </mapper>
