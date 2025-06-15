@@ -140,8 +140,20 @@ public class AdminProductServiceImpl implements AdminProductService {
         }
 
         DashBoardInspectionDefectRatioResponse response = productMapper.getInspectionDefectRatio(date, method);
+
+        if (response == null) {
+            // 데이터 없을 때 빈 객체로 기본값 세팅
+            response = new DashBoardInspectionDefectRatioResponse();
+            response.setTornCount(0);
+            response.setStainCount(0);
+            response.setFadingCount(0);
+            response.setStretchedCount(0);
+            response.setOtherCount(0);
+        }
+
         int totalDefectCount = response.getTornCount() + response.getStainCount() + response.getFadingCount() +
                 response.getStretchedCount() + response.getOtherCount();
+
         response.setTornRatio(calcRatio(response.getTornCount(), totalDefectCount));
         response.setStainRatio(calcRatio(response.getStainCount(), totalDefectCount));
         response.setFadingRatio(calcRatio(response.getFadingCount(), totalDefectCount));
@@ -150,6 +162,7 @@ public class AdminProductServiceImpl implements AdminProductService {
 
         return response;
     }
+
     private double calcRatio(Integer count, Integer total) {
         if (count == null || total==null || total == 0) return 0.0;
         return Math.round((count * 100.0 / total) * 100) / 100.0;
