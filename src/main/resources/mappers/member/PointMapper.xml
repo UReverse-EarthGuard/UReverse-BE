@@ -32,7 +32,7 @@
     </select>
 
     <select id="getTotalPoint" resultType="int">
-        SELECT SUM(PAID_POINT)
+        SELECT COALESCE(SUM(PAID_POINT), 0)
         FROM PRODUCT
         WHERE USER_ID = #{userId} AND STATUS = 'FINISH'
     </select>
