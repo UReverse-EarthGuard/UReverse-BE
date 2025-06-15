@@ -28,4 +28,10 @@
         WHERE USER_ID = #{userId}
     </select>
 
+    <select id="getUserName" resultType="string">
+        SELECT NAME
+        from USERS
+        WHERE USER_ID = #{userId}
+    </select>
+
 </mapper>

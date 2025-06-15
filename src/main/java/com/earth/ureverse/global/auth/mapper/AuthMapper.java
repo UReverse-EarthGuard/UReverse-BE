@@ -20,4 +20,5 @@ public interface AuthMapper {
 
     void updateIsActive(@Param("userId") Long userId, @Param("isActive") String inactive);
 
+    String getUserName(Long userId);
 }

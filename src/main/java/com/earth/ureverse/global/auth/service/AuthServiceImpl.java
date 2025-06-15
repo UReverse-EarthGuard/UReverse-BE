@@ -1,5 +1,6 @@
 package com.earth.ureverse.global.auth.service;
 
+import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.auth.JwtTokenProvider;
 import com.earth.ureverse.global.auth.dto.db.AuthenticatedUser;
 import com.earth.ureverse.global.auth.dto.request.LoginRequestDto;
@@ -77,6 +78,12 @@ public class AuthServiceImpl implements AuthService {
         String encodedPassword = passwordEncoder.encode(signUpRequestDto.getPassword());
         signUpRequestDto.setPassword(encodedPassword);
         authMapper.insertMember(signUpRequestDto);
+    }
+
+    @Override
+    public String getUserName(CustomUserDetails customUserDetails) {
+        Long userId = customUserDetails.getUserId();
+        return authMapper.getUserName(userId);
     }
 
 }

@@ -180,6 +180,7 @@
                     #{status}
                 </foreach>
             </if>
+            AND p.status NOT IN ('CANCEL', 'REJECT', 'NONE')
         ORDER BY p.updated_at DESC
         OFFSET #{pageStart} ROWS FETCH NEXT #{pageSize} ROWS ONLY
     </select>
@@ -211,6 +212,7 @@
                     #{status}
                 </foreach>
             </if>
+        AND p.status NOT IN ('CANCEL', 'REJECT', 'NONE')
     </select>
 
     <!-- 상품 상세 정보   -->
