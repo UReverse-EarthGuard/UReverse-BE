@@ -7,6 +7,7 @@ import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
+import com.earth.ureverse.member.dto.response.SalesHistoryListResponseDto;
 import com.earth.ureverse.member.service.MemberService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -74,6 +75,19 @@ public class MemberController {
                 customUserDetails.getUserId(), limit, lastCreatedAt, lastProductId
         );
         return  CommonResponseEntity.success(pointHistoryListResponseDto);
+    }
+
+    @GetMapping("/sales")
+    public CommonResponseEntity<SalesHistoryListResponseDto> getSalesHistory(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String lastCreatedAt,
+            @RequestParam(required = false) Long lastProductId
+    ) {
+        SalesHistoryListResponseDto salesHistoryListResponseDto = memberService.getSalesHistory(
+                customUserDetails.getUserId(), limit, lastCreatedAt, lastProductId
+        );
+        return CommonResponseEntity.success(salesHistoryListResponseDto);
     }
 
     @GetMapping("/me")
