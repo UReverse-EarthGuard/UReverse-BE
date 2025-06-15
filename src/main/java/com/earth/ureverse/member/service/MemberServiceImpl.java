@@ -184,7 +184,6 @@ public class MemberServiceImpl implements MemberService {
         return result;
     }
 
-
     // 유효한 날짜 형식인지 확인 (yyyy-MM-dd HH:mm:ss)
     private boolean isValidDateTimeFormat(String lastCreatedAt) {
         try {

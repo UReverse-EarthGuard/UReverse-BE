@@ -70,7 +70,7 @@ public class MemberController {
             @RequestParam(required = false) String lastCreatedAt,
             @RequestParam(required = false) Long lastProductId
     ) {
-        PointHistoryListResponseDto pointHistoryListResponseDto = memberService.getPointHistories(
+        PointHistoryListResponseDto pointHistoryListResponseDto = memberService.getPointHistory(
                 customUserDetails.getUserId(), limit, lastCreatedAt, lastProductId
         );
         return  CommonResponseEntity.success(pointHistoryListResponseDto);
