@@ -1,5 +1,6 @@
 package com.earth.ureverse.global.auth.controller;
 
+import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.auth.JwtTokenProvider;
 import com.earth.ureverse.global.auth.dto.request.LoginRequestDto;
 import com.earth.ureverse.global.auth.dto.request.SignUpRequestDto;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
@@ -70,6 +72,12 @@ public class AuthController {
     public CommonResponseEntity<String> signup(@Valid @RequestBody SignUpRequestDto signUpRequestDto) {
         authService.signUp(signUpRequestDto);
         return CommonResponseEntity.success("회원가입이 완료되었습니다.");
+    }
+
+    //이름 출력
+    @GetMapping("/name")
+    public CommonResponseEntity<String> getUserName(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return CommonResponseEntity.success(authService.getUserName(customUserDetails));
     }
 
 }

@@ -29,14 +29,14 @@ public class AdminController {
     private final AdminProductService adminProductService;
     private final AdminUserService adminUserService;
 
-    @GetMapping("/products/finish")
+    @PostMapping("/products/finish")
     public CommonResponseEntity<PaginationResponse<FinishProductResponse>> getFinishProducts(
             @RequestBody ProductSearchRequest request
     ) {
         return CommonResponseEntity.success(adminProductService.getFinishProducts(request));
     }
 
-    @GetMapping("/products/pickup")
+    @PostMapping("/products/pickup")
     public CommonResponseEntity<PaginationResponse<PickupProductResponse>> getPickupProducts(
             @RequestBody PickupSearchRequest request
     ) {
@@ -53,7 +53,7 @@ public class AdminController {
         return CommonResponseEntity.success(adminProductService.getPickupProductDetail(productId));
     }
 
-    @GetMapping("/users")
+    @PostMapping("/users")
     public CommonResponseEntity<PaginationResponse<ActiveMemberResponse>> getActiveUsers(
             @RequestBody ActiveMemberSearchRequest request
     ) {
