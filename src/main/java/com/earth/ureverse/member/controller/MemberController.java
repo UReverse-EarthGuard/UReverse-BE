@@ -3,6 +3,7 @@ package com.earth.ureverse.member.controller;
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
+import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
@@ -96,4 +97,15 @@ public class MemberController {
         return CommonResponseEntity.success(memberInfoResponseDto);
     }
 
+    @PostMapping("/product")
+    public CommonResponseEntity<String> addProduct(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody ProductUploadRequestDto dto
+    ) {
+        System.out.println(dto.toString());
+
+//        memberService.registerProduct(dto, customUserDetails.getUserId());
+
+        return CommonResponseEntity.success("상품 등록을 성공했습니다.");
+    }
 }

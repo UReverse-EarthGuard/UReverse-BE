@@ -1,6 +1,7 @@
 package com.earth.ureverse.member.service;
 
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
+import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
@@ -22,4 +23,5 @@ public interface MemberService {
 
     MemberInfoResponseDto getMyInfo(Long userId);
 
+    void registerProduct(ProductUploadRequestDto dto, Long userId);
 }

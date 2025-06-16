@@ -6,7 +6,10 @@ import com.earth.ureverse.global.common.exception.AlreadyWithdrawnException;
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.PasswordMismatchException;
 import com.earth.ureverse.global.enums.ProductStatus;
+import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.global.util.S3Service;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
+import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.*;
@@ -18,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,6 +41,8 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final PointMapper pointMapper;
     private final SalesMapper salesMapper;
+    private final ProductMapper productMapper;
+    private final S3Service s3Service;
 
     @Override
     public void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto) {
@@ -191,5 +197,17 @@ public class MemberServiceImpl implements MemberService {
         } catch (DateTimeParseException e) {
             return false;
         }
+    }
+
+    @Override
+    public void registerProduct(ProductUploadRequestDto dto, Long userId) {
+
+        // 시퀀스로 insert 될 productId 미리 조회
+        Long productId = productMapper.getNextProductId();
+
+        // 상품 데이터 등록
+        productMapper.insertProduct(productId, userId, dto);
+
+        // productId 를 FK 로 가지는 image 객체에 url 저장
     }
 }
