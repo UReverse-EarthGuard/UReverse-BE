@@ -5,7 +5,6 @@ import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
-import com.earth.ureverse.member.dto.response.BrandResponseDto;
 import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
 import com.earth.ureverse.member.dto.response.SalesHistoryListResponseDto;
@@ -18,9 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Tag(name = "Member", description = "고객 서비스 API 입니다.")
 @RestController
@@ -98,12 +94,6 @@ public class MemberController {
     public CommonResponseEntity<MemberInfoResponseDto> getMyInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         MemberInfoResponseDto memberInfoResponseDto = memberService.getMyInfo(customUserDetails.getUserId());
         return CommonResponseEntity.success(memberInfoResponseDto);
-    }
-
-    @GetMapping("/allBrands")
-    public CommonResponseEntity<List<BrandResponseDto>> getAllBrand(){
-        List<BrandResponseDto> brandResponseDtos = memberService.getBrands();
-        return CommonResponseEntity.success(brandResponseDtos);
     }
 
 }
