@@ -10,15 +10,18 @@ import java.util.Optional;
 @Mapper
 public interface AuthMapper {
 
-    Optional<AuthenticatedUser> findByEmail(@Param(value="email") String email);
+    Optional<AuthenticatedUser> findByEmail(@Param("email") String email);
 
-    boolean existsByEmail(@Param(value = "email") String email);
+    boolean existsByEmail(@Param("email") String email);
 
     void insertMember(SignUpRequestDto signupRequestDto);
 
-    Optional<AuthenticatedUser> findByUserId(@Param(value="userId") Long userId);
+    Optional<AuthenticatedUser> findByUserId(@Param("userId") Long userId);
 
     void updateIsActive(@Param("userId") Long userId, @Param("isActive") String inactive);
 
     String getUserName(Long userId);
+
+    void updatePasswordByEmail(@Param("email") String email, @Param("encodedPassword") String encodedPassword);
+
 }
