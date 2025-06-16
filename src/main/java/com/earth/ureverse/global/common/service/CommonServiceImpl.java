@@ -42,7 +42,7 @@ public class CommonServiceImpl implements CommonService {
                 .map(entry -> {
                     String mainName = entry.getKey();
                     List<SubCategoryResponseDto> subList = entry.getValue().stream()
-                            .map(dto -> new SubCategoryResponseDto(dto.getCategoryId().intValue(), dto.getSubName()))
+                            .map(dto -> new SubCategoryResponseDto(dto.getCategoryId(), dto.getSubName(), dto.getPoint()))
                             .collect(Collectors.toList());
 
                     return new CategoryListResponseDto(mainName, subList);

@@ -11,4 +11,5 @@ public class CategoryQueryDto {
     private Long categoryId;
     private String mainName;
     private String subName;
+    private Long point;
 }

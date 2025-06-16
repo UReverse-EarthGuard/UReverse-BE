@@ -13,7 +13,8 @@
         select
             c.category_id as categoryId,
             c.main_name as mainName,
-            c.sub_name as subName
+            c.sub_name as subName,
+            bcc.point as point
         FROM category c JOIN BRAND_CATEGORY_COMBINATION bcc ON c.category_id = bcc.category_id
         JOIN BRAND b ON b.brand_id = bcc.brand_id
         WHERE b.brand_id = #{brandId}
