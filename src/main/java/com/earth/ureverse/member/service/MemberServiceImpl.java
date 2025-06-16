@@ -10,7 +10,6 @@ import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.*;
-import com.earth.ureverse.member.mapper.BrandMapper;
 import com.earth.ureverse.member.mapper.MemberMapper;
 import com.earth.ureverse.member.mapper.PointMapper;
 import com.earth.ureverse.member.mapper.SalesMapper;
@@ -24,7 +23,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +37,6 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final PointMapper pointMapper;
     private final SalesMapper salesMapper;
-    private final BrandMapper brandMapper;
 
     @Override
     public void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto) {
@@ -194,13 +191,5 @@ public class MemberServiceImpl implements MemberService {
         } catch (DateTimeParseException e) {
             return false;
         }
-    }
-
-    @Override
-    public List<BrandResponseDto> getBrands() {
-        log.info("getBrands()");
-        List<BrandResponseDto> brandResponseDtos = brandMapper.selectAllBrands();
-        log.info("getBrands() :: brandResponseDtos.size() = " + brandResponseDtos.size());
-        return brandResponseDtos;
     }
 }

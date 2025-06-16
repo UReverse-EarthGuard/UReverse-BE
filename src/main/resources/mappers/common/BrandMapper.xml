@@ -3,8 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.earth.ureverse.member.mapper.BrandMapper">
-    <select id="selectAllBrands" resultType="com.earth.ureverse.member.dto.response.BrandResponseDto">
+<mapper namespace="com.earth.ureverse.global.common.mapper.BrandMapper">
+    <select id="selectAllBrands" resultType="com.earth.ureverse.global.common.dto.response.BrandResponseDto">
         select
             brand_id as brandId,
             name,
