@@ -29,12 +29,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public List<String> getCategories() {
-        List<CategoryQueryDto> categoryResponseDtos = categoryMapper.selectAllCategory();
-
-        return categoryResponseDtos.stream()
-                .map(CategoryQueryDto::getMainName)       // mainName 추출
-                .distinct()                       // 중복 제거
-                .toList();
+        return categoryMapper.selectAllCategory();
     }
 
     @Override
