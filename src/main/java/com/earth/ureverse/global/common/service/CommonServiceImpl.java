@@ -1,12 +1,17 @@
 package com.earth.ureverse.global.common.service;
 
+import com.earth.ureverse.global.common.dto.query.CategoryQueryDto;
 import com.earth.ureverse.global.common.dto.response.BrandResponseDto;
+import com.earth.ureverse.global.common.dto.response.CategoryListResponseDto;
+import com.earth.ureverse.global.common.dto.response.SubCategoryResponseDto;
 import com.earth.ureverse.global.common.mapper.BrandMapper;
+import com.earth.ureverse.global.common.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -14,12 +19,41 @@ import java.util.List;
 public class CommonServiceImpl implements CommonService {
 
     private final BrandMapper brandMapper;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public List<BrandResponseDto> getBrands() {
-        log.info("getBrands()");
         List<BrandResponseDto> brandResponseDtos = brandMapper.selectAllBrands();
-        log.info("getBrands() :: brandResponseDtos.size() = " + brandResponseDtos.size());
         return brandResponseDtos;
+    }
+
+    @Override
+    public List<String> getCategories() {
+        List<CategoryQueryDto> categoryResponseDtos = categoryMapper.selectAllCategory();
+
+        return categoryResponseDtos.stream()
+                .map(CategoryQueryDto::getMainName)       // mainName 추출
+                .distinct()                       // 중복 제거
+                .toList();
+    }
+
+    @Override
+    public List<CategoryListResponseDto> getCategoriesByBrandId(long brandId) {
+        List<CategoryQueryDto> categoryResponseDtos = categoryMapper.selectCategoriesByBrandId(brandId);
+
+        List<CategoryListResponseDto> categoryList = categoryResponseDtos.stream()
+                .collect(Collectors.groupingBy(CategoryQueryDto::getMainName))
+                .entrySet().stream()
+                .map(entry -> {
+                    String mainName = entry.getKey();
+                    List<SubCategoryResponseDto> subList = entry.getValue().stream()
+                            .map(dto -> new SubCategoryResponseDto(dto.getCategoryId().intValue(), dto.getSubName()))
+                            .collect(Collectors.toList());
+
+                    return new CategoryListResponseDto(mainName, subList);
+                })
+                .collect(Collectors.toList());
+
+        return categoryList;
     }
 }
