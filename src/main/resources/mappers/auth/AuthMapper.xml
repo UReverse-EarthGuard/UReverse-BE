@@ -34,4 +34,11 @@
         WHERE USER_ID = #{userId}
     </select>
 
+    <update id="linkKakaoAccount">
+        UPDATE USERS
+        SET
+        KAKAO_ID = #{kakaoUser.kakaoId}
+        WHERE USER_ID = #{userId}
+    </update>
+
 </mapper>

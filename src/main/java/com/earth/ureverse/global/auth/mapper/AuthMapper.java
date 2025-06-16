@@ -2,6 +2,7 @@ package com.earth.ureverse.global.auth.mapper;
 
 import com.earth.ureverse.global.auth.dto.db.AuthenticatedUser;
 import com.earth.ureverse.global.auth.dto.request.SignUpRequestDto;
+import com.earth.ureverse.global.auth.dto.response.KakaoUserInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,4 +22,6 @@ public interface AuthMapper {
     void updateIsActive(@Param("userId") Long userId, @Param("isActive") String inactive);
 
     String getUserName(Long userId);
+
+    void linkKakaoAccount(@Param("userId") Long userId, @Param("kakaoUser") KakaoUserInfo kakaoUserInfo);
 }

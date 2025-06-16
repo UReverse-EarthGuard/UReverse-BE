@@ -34,6 +34,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/auth/**" ,    // 로그인, 회원가입
+                                "/api/v1/oauth/**" ,
                                 "/api/v1/home",
                                 // Swagger
                                 "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**",
