@@ -3,6 +3,7 @@ package com.earth.ureverse.global.auth.controller;
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.auth.JwtTokenProvider;
 import com.earth.ureverse.global.auth.dto.request.LoginRequestDto;
+import com.earth.ureverse.global.auth.dto.request.RecoveryPasswordRequestDto;
 import com.earth.ureverse.global.auth.dto.request.SignUpRequestDto;
 import com.earth.ureverse.global.auth.dto.response.LoginResponseDto;
 import com.earth.ureverse.global.auth.service.AuthService;
@@ -78,6 +79,12 @@ public class AuthController {
     @GetMapping("/name")
     public CommonResponseEntity<String> getUserName(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         return CommonResponseEntity.success(authService.getUserName(customUserDetails));
+    }
+
+    @PostMapping("/recovery/password")
+    public CommonResponseEntity<String> recoverPassword(@RequestBody @Valid RecoveryPasswordRequestDto recoveryPasswordRequestDto) {
+        authService.recoverPassword(recoveryPasswordRequestDto);
+        return CommonResponseEntity.success("임시 비밀번호가 이메일로 전송되었습니다.");
     }
 
 }

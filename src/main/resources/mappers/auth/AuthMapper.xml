@@ -34,4 +34,10 @@
         WHERE USER_ID = #{userId}
     </select>
 
+    <update id="updatePasswordByEmail">
+        UPDATE USERS
+        SET PASSWORD = #{encodedPassword}
+        WHERE EMAIL = #{email}
+    </update>
+
 </mapper>

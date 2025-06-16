@@ -21,4 +21,7 @@ public interface AuthMapper {
     void updateIsActive(@Param("userId") Long userId, @Param("isActive") String inactive);
 
     String getUserName(Long userId);
+
+    void updatePasswordByEmail(@Param(value = "email") String email, @Param(value = "encodedPassword") String encodedPassword);
+
 }
