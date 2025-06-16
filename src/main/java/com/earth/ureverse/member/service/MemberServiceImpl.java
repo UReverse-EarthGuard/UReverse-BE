@@ -8,6 +8,7 @@ import com.earth.ureverse.global.common.exception.PasswordMismatchException;
 import com.earth.ureverse.global.enums.ProductStatus;
 import com.earth.ureverse.global.mapper.DeliveryMapper;
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.inspector.service.AiService;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,6 +47,7 @@ public class MemberServiceImpl implements MemberService {
     private final ProductMapper productMapper;
     private final DeliveryMapper deliveryMapper;
     private final ProductImageMapper productImageMapper;
+    private final AiService aiService;
 
     @Override
     public void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto) {
@@ -203,7 +206,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void registerProduct(ProductUploadRequestDto dto, Long userId) {
+    public void registerProduct(ProductUploadRequestDto dto, Long userId) throws IOException {
 
         // 시퀀스로 insert 될 productId 미리 조회
         Long productId = productMapper.getNextProductId();
@@ -218,5 +221,9 @@ public class MemberServiceImpl implements MemberService {
         for(String url : dto.getProductsImageUrl()) {
             productImageMapper.insertProductImage(productId, url, userId);
         }
+
+        // AI 비동기 호출
+        aiService.aiInspect(dto.getProductsImageUrl(), dto.getCategory(), productId);
     }
+
 }

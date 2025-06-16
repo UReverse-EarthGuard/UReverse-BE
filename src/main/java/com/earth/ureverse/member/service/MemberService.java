@@ -9,6 +9,8 @@ import com.earth.ureverse.member.dto.response.PointHistoryListResponseDto;
 import com.earth.ureverse.member.dto.response.SalesHistoryListResponseDto;
 import jakarta.validation.Valid;
 
+import java.io.IOException;
+
 public interface MemberService {
 
     void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto);
@@ -23,5 +25,5 @@ public interface MemberService {
 
     MemberInfoResponseDto getMyInfo(Long userId);
 
-    void registerProduct(ProductUploadRequestDto dto, Long userId);
+    void registerProduct(ProductUploadRequestDto dto, Long userId) throws IOException;
 }

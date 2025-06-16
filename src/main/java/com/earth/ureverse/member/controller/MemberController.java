@@ -19,6 +19,8 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @Tag(name = "Member", description = "고객 서비스 API 입니다.")
 @RestController
 @RequiredArgsConstructor
@@ -101,7 +103,7 @@ public class MemberController {
     public CommonResponseEntity<String> addProduct(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody ProductUploadRequestDto dto
-    ) {
+    ) throws IOException {
 
         memberService.registerProduct(dto, customUserDetails.getUserId());
 
