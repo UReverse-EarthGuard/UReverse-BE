@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/inspectors/**").hasRole("INSPECTOR")
                         .requestMatchers("/api/v1/members/**").hasRole("MEMBER")
+                        .requestMatchers("/api/v1/common/**").hasAnyRole("ADMIN", "INSPECTOR", "MEMBER")
                         .anyRequest().authenticated()
                 )
         ;

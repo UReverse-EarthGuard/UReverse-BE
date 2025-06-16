@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Common", description = "공통 응답 포맷의 예제를 제공합니다. 성공 및 에러 응답 구조를 확인할 수 있습니다.")
 @RestController
-@RequestMapping("/api/v1/example")
+@RequestMapping("/api/v1/common")
 public class CommonController {
     //성공
     @Operation(summary = "성공 예시", description = "성공 응답 예제입니다.")
