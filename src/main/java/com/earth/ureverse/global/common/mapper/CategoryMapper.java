@@ -8,7 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface CategoryMapper {
-    List<CategoryQueryDto> selectAllCategory();
+    List<String> selectAllCategory();
 
     List<CategoryQueryDto> selectCategoriesByBrandId(Long brandId);
 }

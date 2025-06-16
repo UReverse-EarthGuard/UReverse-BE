@@ -4,11 +4,8 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.earth.ureverse.global.common.mapper.CategoryMapper">
-    <select id="selectAllCategory" resultType="com.earth.ureverse.global.common.dto.query.CategoryQueryDto">
-        select
-            category_id as categoryId,
-            main_name as mainName,
-            sub_name as subName
+    <select id="selectAllCategory" resultType="java.lang.String">
+        select DISTINCT main_name
         from category
     </select>
 
@@ -16,7 +13,8 @@
         select
             c.category_id as categoryId,
             c.main_name as mainName,
-            c.sub_name as subName
+            c.sub_name as subName,
+            bcc.point as point
         FROM category c JOIN BRAND_CATEGORY_COMBINATION bcc ON c.category_id = bcc.category_id
         JOIN BRAND b ON b.brand_id = bcc.brand_id
         WHERE b.brand_id = #{brandId}
