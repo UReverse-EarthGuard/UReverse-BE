@@ -102,9 +102,8 @@ public class MemberController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody ProductUploadRequestDto dto
     ) {
-        System.out.println(dto.toString());
 
-//        memberService.registerProduct(dto, customUserDetails.getUserId());
+        memberService.registerProduct(dto, customUserDetails.getUserId());
 
         return CommonResponseEntity.success("상품 등록을 성공했습니다.");
     }

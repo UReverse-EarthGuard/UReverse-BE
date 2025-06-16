@@ -6,8 +6,8 @@ import com.earth.ureverse.global.common.exception.AlreadyWithdrawnException;
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.PasswordMismatchException;
 import com.earth.ureverse.global.enums.ProductStatus;
+import com.earth.ureverse.global.mapper.DeliveryMapper;
 import com.earth.ureverse.global.mapper.ProductMapper;
-import com.earth.ureverse.global.util.S3Service;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
@@ -15,13 +15,14 @@ import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.*;
 import com.earth.ureverse.member.mapper.MemberMapper;
 import com.earth.ureverse.member.mapper.PointMapper;
+import com.earth.ureverse.member.mapper.ProductImageMapper;
 import com.earth.ureverse.member.mapper.SalesMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,7 +43,8 @@ public class MemberServiceImpl implements MemberService {
     private final PointMapper pointMapper;
     private final SalesMapper salesMapper;
     private final ProductMapper productMapper;
-    private final S3Service s3Service;
+    private final DeliveryMapper deliveryMapper;
+    private final ProductImageMapper productImageMapper;
 
     @Override
     public void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto) {
@@ -200,6 +202,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public void registerProduct(ProductUploadRequestDto dto, Long userId) {
 
         // 시퀀스로 insert 될 productId 미리 조회
@@ -208,6 +211,12 @@ public class MemberServiceImpl implements MemberService {
         // 상품 데이터 등록
         productMapper.insertProduct(productId, userId, dto);
 
+        // 배송정보 데이터 등록
+        deliveryMapper.insertDelivery(productId, userId, dto);
+
         // productId 를 FK 로 가지는 image 객체에 url 저장
+        for(String url : dto.getProductsImageUrl()) {
+            productImageMapper.insertProductImage(productId, url, userId);
+        }
     }
 }
