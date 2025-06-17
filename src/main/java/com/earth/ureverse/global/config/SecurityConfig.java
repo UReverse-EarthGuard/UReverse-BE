@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/inspectors/**").hasRole("INSPECTOR")
                         .requestMatchers("/api/v1/members/**").hasRole("MEMBER")
                         .requestMatchers("/api/v1/common/**").hasAnyRole("ADMIN", "INSPECTOR", "MEMBER")
+                        .requestMatchers("/api/v1/notifications/subscribe/**").permitAll()
                         .anyRequest().authenticated()
                 )
         ;

@@ -9,6 +9,14 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+
+        // SSE 연결용. credentials 비허용
+        registry.addMapping("/api/v1/notifications/subscribe/**")
+                .allowedOrigins("http://localhost:3000", "https://localhost:3000")
+                .allowedMethods("GET")
+                .allowedHeaders("*")
+                .allowCredentials(false); // EventSource는 credentials 못 씀
+
         registry.addMapping("/api/v1/**")
                 .allowedOrigins("http://localhost:3000", "https://localhost:3000")
                 .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
