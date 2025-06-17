@@ -221,6 +221,7 @@
             resultType="com.earth.ureverse.admin.dto.response.ProductDetailResponse">
         SELECT
         p.product_id AS id,
+        p.user_id AS userId,
         b.name AS brand,
         c.main_name AS categoryMain,
         c.sub_name AS categorySub,

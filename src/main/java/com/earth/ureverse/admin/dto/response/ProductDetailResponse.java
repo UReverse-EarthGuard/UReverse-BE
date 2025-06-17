@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductDetailResponse {
     private Long id; //productId
+    private Long userId;
     private List<String> images;
     private String brand; //브랜드명
     private String categoryMain; //카테고리 Main
