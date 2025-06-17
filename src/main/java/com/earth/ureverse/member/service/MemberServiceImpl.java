@@ -6,19 +6,26 @@ import com.earth.ureverse.global.common.exception.AlreadyWithdrawnException;
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.PasswordMismatchException;
 import com.earth.ureverse.global.enums.ProductStatus;
+import com.earth.ureverse.global.mapper.DeliveryMapper;
+import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.inspector.service.AiService;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
+import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.*;
 import com.earth.ureverse.member.mapper.MemberMapper;
 import com.earth.ureverse.member.mapper.PointMapper;
+import com.earth.ureverse.member.mapper.ProductImageMapper;
 import com.earth.ureverse.member.mapper.SalesMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +44,10 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final PointMapper pointMapper;
     private final SalesMapper salesMapper;
+    private final ProductMapper productMapper;
+    private final DeliveryMapper deliveryMapper;
+    private final ProductImageMapper productImageMapper;
+    private final AiService aiService;
 
     @Override
     public void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto) {
@@ -192,4 +203,27 @@ public class MemberServiceImpl implements MemberService {
             return false;
         }
     }
+
+    @Override
+    @Transactional
+    public void registerProduct(ProductUploadRequestDto dto, Long userId){
+
+        // 시퀀스로 insert 될 productId 미리 조회
+        Long productId = productMapper.getNextProductId();
+
+        // 상품 데이터 등록
+        productMapper.insertProduct(productId, userId, dto);
+
+        // 배송정보 데이터 등록
+        deliveryMapper.insertDelivery(productId, userId, dto);
+
+        // productId 를 FK 로 가지는 image 객체에 url 저장
+        for(String url : dto.getProductsImageUrl()) {
+            productImageMapper.insertProductImage(productId, url, userId);
+        }
+
+        // AI 비동기 호출
+        aiService.aiInspect(dto.getProductsImageUrl(), dto.getCategory(), productId, dto.getName());
+    }
+
 }

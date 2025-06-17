@@ -3,6 +3,7 @@ package com.earth.ureverse.member.controller;
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
+import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
 import com.earth.ureverse.member.dto.request.WithdrawRequestDto;
 import com.earth.ureverse.member.dto.response.MemberInfoResponseDto;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @Tag(name = "Member", description = "고객 서비스 API 입니다.")
 @RestController
@@ -96,4 +99,14 @@ public class MemberController {
         return CommonResponseEntity.success(memberInfoResponseDto);
     }
 
+    @PostMapping("/product")
+    public CommonResponseEntity<String> addProduct(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody ProductUploadRequestDto dto
+    ) {
+
+        memberService.registerProduct(dto, customUserDetails.getUserId());
+
+        return CommonResponseEntity.success("상품 등록을 성공했습니다.");
+    }
 }

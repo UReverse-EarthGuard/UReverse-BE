@@ -8,6 +8,7 @@ import com.earth.ureverse.inspector.dto.request.ProductInspectionRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
+import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -85,4 +86,13 @@ public interface ProductMapper {
     List<DashBoardFinishProductResponse> getFinishStatsByDay(int days);
 
     List<DashBoardFinishProductResponse> getFinishStatsByMonth(int months);
+
+    Long getNextProductId(); // 시퀀스에서 PK 미리 조회
+
+    void insertProduct(
+            @Param("productId") Long productId,
+            @Param("userId") Long userId,
+            @Param("dto") ProductUploadRequestDto dto);
+
+    void deleteById(Long productId);
 }

@@ -11,6 +11,20 @@
         WHERE url = #{url}
     </select>
 
-
+    <insert id="insertProductImage">
+        INSERT INTO PRODUCT_IMAGE(
+            image_id,
+            product_id,
+            url,
+            created_at,
+            created_by
+        ) VALUES (
+            product_image_seq.NEXTVAL,
+            #{productId},
+            #{url},
+            SYSDATE,
+            #{userId}
+        )
+    </insert>
 
 </mapper>

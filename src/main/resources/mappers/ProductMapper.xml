@@ -620,5 +620,37 @@
         ORDER BY baseDate ASC
     </select>
 
+    <select id="getNextProductId" resultType="long">
+        SELECT product_seq.NEXTVAL FROM DUAL
+    </select>
+
+    <insert id="insertProduct">
+        INSERT INTO product(
+            product_id,
+            user_id,
+            brand_id,
+            category_id,
+            grade,
+            paid_point,
+            status,
+            created_at,
+            created_by
+        ) VALUES (
+            #{productId},
+            #{userId},
+            #{dto.brandId},
+            #{dto.categoryId},
+            NULL,
+            NULL,
+            'register',
+            SYSDATE,
+            #{userId}
+        )
+    </insert>
+
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM product
+        WHERE product_id = #{productId}
+    </delete>
 
 </mapper>
