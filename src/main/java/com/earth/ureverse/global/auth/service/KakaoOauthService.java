@@ -28,13 +28,13 @@ public class KakaoOauthService {
     private final AuthMapper authMapper;
 
     // 카카오 로그인 URL 생성
-    public String getKakaoLoginUrl(String jwtToken) {
+    public String getKakaoLoginUrl(String encodedState) {
         return "https://kauth.kakao.com/oauth/authorize"
                 + "?client_id=" + kakaoRestApiKey
                 + "&redirect_uri=" + kakaoRedirectUri
                 + "&response_type=code"
                 + "&scope=profile_nickname,talk_message"
-                + "&state=" + jwtToken;
+                + "&state=" + encodedState;
     }
 
     // 카카오 사용자 정보 조회 및 연동 처리
