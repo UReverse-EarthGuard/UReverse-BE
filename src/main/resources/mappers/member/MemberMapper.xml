@@ -56,7 +56,11 @@
     </select>
 
     <select id="findMyInfoByUserId" parameterType="long" resultType="com.earth.ureverse.member.dto.response.MemberInfoResponseDto">
-        SELECT USER_ID AS userId, NAME, EMAIL, PHONE, ROLE
+        SELECT USER_ID AS userId, NAME, EMAIL, PHONE, ROLE,
+        CASE
+        WHEN KAKAO_ID IS NOT NULL THEN 1
+        ELSE 0
+        END AS kakaoLinked
         FROM USERS
         WHERE USER_ID = #{userId}
     </select>
