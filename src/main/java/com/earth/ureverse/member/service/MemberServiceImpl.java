@@ -223,7 +223,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // AI 비동기 호출
-        aiService.aiInspect(dto.getProductsImageUrl(), dto.getCategory(), productId);
+        aiService.aiInspect(dto.getProductsImageUrl(), dto.getCategory(), productId, dto.getName());
     }
 
 }

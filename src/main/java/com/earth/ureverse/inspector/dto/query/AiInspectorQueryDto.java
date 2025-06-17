@@ -16,9 +16,10 @@ public class AiInspectorQueryDto {
     private String hasFading;
     private String isStretched;
     private String otherDefect;
+    private String senderName;
 
     @Builder
-    public AiInspectorQueryDto(Long productId, String inspectMethod, String notes, String result, String isTorn, String hasStain, String hasFading, String isStretched, String otherDefect) {
+    public AiInspectorQueryDto(Long productId, String inspectMethod, String notes, String result, String isTorn, String hasStain, String hasFading, String isStretched, String otherDefect, String senderName) {
         this.productId = productId;
         this.inspectMethod = inspectMethod;
         this.notes = notes;
@@ -28,5 +29,6 @@ public class AiInspectorQueryDto {
         this.hasFading = hasFading;
         this.isStretched = isStretched;
         this.otherDefect = otherDefect;
+        this.senderName = senderName;
     }
 }

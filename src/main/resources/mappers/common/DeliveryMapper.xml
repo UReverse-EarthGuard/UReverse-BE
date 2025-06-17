@@ -19,7 +19,7 @@
             delivery_seq.NEXTVAL,
             #{productId},
             #{userId},
-            '배달원1',
+            #{dto.senderName},
             #{dto.zipCode},
             #{dto.address} || ' ' || #{dto.addressDetail},
             #{dto.phone},

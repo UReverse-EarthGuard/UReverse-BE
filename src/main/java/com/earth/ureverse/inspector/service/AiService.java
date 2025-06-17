@@ -8,5 +8,5 @@ import java.util.List;
 public interface AiService {
 
     @Async
-    void aiInspect(List<String> imgUrls, String category, Long productId) throws IOException;
+    void aiInspect(List<String> imgUrls, String category, Long productId, String senderName) throws IOException;
 }

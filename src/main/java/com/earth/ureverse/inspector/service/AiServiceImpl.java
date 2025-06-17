@@ -36,7 +36,7 @@ public class AiServiceImpl implements AiService {
     private final S3Service s3Service;
 
     @Override
-    public void aiInspect(List<String> imgUrls, String category, Long productId) throws IOException {
+    public void aiInspect(List<String> imgUrls, String category, Long productId, String senderName) throws IOException {
         // JSON 요청 생성
         ObjectMapper mapper = new ObjectMapper();
 
@@ -82,8 +82,7 @@ public class AiServiceImpl implements AiService {
                         "- notes 항목에는 Y로 표시된 손상에 대한 설명을 간결하게 기술\n" +
                         "\n" +
                         "[result 분류 기준]\n" +
-                        "- pass: 모든 세부 항목이 손상 없음 (모두 N)\n" +
-                        "- hold: 손상은 있으나 사람이 판단해야 할 수준 (예: 조명, 주름, 디자인과 혼동), 확실한 손상이지만 경미한 경우\n" +
+                        "- pass: 모든 세부 항목이 손상 없음 (모두 N), 손상은 있으나 사람이 판단해야 할 수준 (예: 조명, 주름, 디자인과 혼동), 확실한 손상이지만 경미한 경우\n" +
                         "- fail: 심각한 손상이 존재하거나, 사진이 흐리거나 어둡거나 가려져 판단 불가능한 경우, 사진이 카테고리와 명백히 불일치하는 경우, 각 사진이 확실히 서로 다른 의류일 경우, 제품의 앞, 뒷면 사진 중 하나라도 없는 경우\n" +
                         "\n" +
                         "[손상 항목 정의 - Y/N]\n" +
@@ -163,6 +162,7 @@ public class AiServiceImpl implements AiService {
                 .hasFading(hasFading)
                 .isStretched(isStretched)
                 .otherDefect(otherDefect)
+                .senderName(senderName)
                 .build();
 
         // db 저장
