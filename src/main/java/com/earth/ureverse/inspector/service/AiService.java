@@ -8,5 +8,5 @@ import java.util.List;
 public interface AiService {
 
     @Async
-    void aiInspect(List<String> imgUrls, String category, Long productId, String senderName);
+    void aiInspect(List<String> imgUrls, String category, String brandName, Long productId, String senderName, Long userId);
 }

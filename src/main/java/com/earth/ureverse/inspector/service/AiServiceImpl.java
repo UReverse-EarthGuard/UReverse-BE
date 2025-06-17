@@ -5,6 +5,8 @@ import com.earth.ureverse.global.mapper.ProductMapper;
 import com.earth.ureverse.global.util.S3Service;
 import com.earth.ureverse.inspector.dto.query.AiInspectorQueryDto;
 import com.earth.ureverse.inspector.mapper.InspectorMapper;
+import com.earth.ureverse.member.dto.query.NotificationQueryDto;
+import com.earth.ureverse.member.mapper.NotificationMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -37,12 +39,13 @@ public class AiServiceImpl implements AiService {
     private String apiUrl;
 
     private final InspectorMapper inspectorMapper;
+    private final NotificationMapper notificationMapper;
     private final ProductMapper productMapper;
     private final S3Service s3Service;
     private static final int MAX_RETRY = 10;
 
     @Override
-    public void aiInspect(List<String> imgUrls, String category, Long productId, String senderName) {
+    public void aiInspect(List<String> imgUrls, String category, String brandName, Long productId, String senderName, Long userId) {
         ObjectMapper mapper = new ObjectMapper();
         List<Map<String, Object>> imageParts = new ArrayList<>();
 
@@ -101,7 +104,7 @@ public class AiServiceImpl implements AiService {
                     continue;
                 }
 
-                // 정상 응답일 경우 DB 저장
+                // 정상 응답일 경우 inspector DB 저장
                 AiInspectorQueryDto dto = AiInspectorQueryDto.builder()
                         .productId(productId)
                         .inspectMethod("AI")
@@ -114,8 +117,33 @@ public class AiServiceImpl implements AiService {
                         .otherDefect(resultJson.path("otherDefect").asText().toUpperCase())
                         .senderName(senderName)
                         .build();
-
                 inspectorMapper.insert(dto, productId);
+
+                // 결과 메시지 분기 처리
+                String result = dto.getResult(); // "PASS" or "FAIL"
+                String message;
+
+                if ("PASS".equalsIgnoreCase(result)) {
+                    message = String.format(
+                            "등록하신 [%s] 브랜드의 [%s] 상품이 AI 검수를 통과했습니다. 곧 최종 검수가 진행될 예정입니다.",
+                            brandName, category
+                    );
+                } else {
+                    message = String.format(
+                            "등록하신 [%s] 브랜드의 [%s] 상품이 AI 검수에 실패했습니다. 다시 한 번 확인 후 재등록 부탁드립니다.",
+                            brandName, category
+                    );
+                }
+
+                // notification DB 저장
+                NotificationQueryDto notificationQueryDto = NotificationQueryDto.builder()
+                                .notificationType("AI_RESULT")
+                                .userId(userId)
+                                .title("AI 검수결과 안내")
+                                .message(message)
+                                .isRead("N")
+                                .build();
+                notificationMapper.insert(notificationQueryDto);
                 return; // 성공 후 종료
             }
 
