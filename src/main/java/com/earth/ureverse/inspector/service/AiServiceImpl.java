@@ -149,7 +149,7 @@ public class AiServiceImpl implements AiService {
         return  "아래 이미지는 의류의 앞/뒷면이며, 이 의류는 \"" + category + "\" 카테고리에 속한다.\n" +
                 "이 카테고리를 기준으로 손상 여부를 판단하고, 결과를 JSON 형식으로 반환한다.\n\n" +
                 "\n" +
-                "- result (검수결과): pass / hold / fail 중 하나를 선택\n" +
+                "- result (검수결과): pass / fail 중 하나를 선택\n" +
                 "- 각 손상 항목(isTorn, hasStain, hasFading, isStretched, otherDefect)은 Y 또는 N으로 판단\n" +
                 "- notes 항목에는 Y로 표시된 손상에 대한 설명을 간결하게 기술\n" +
                 "\n" +
@@ -169,7 +169,7 @@ public class AiServiceImpl implements AiService {
                 "\n" +
                 "[결과 JSON 구조 예시]\n" +
                 "{\n" +
-                "  \"result\": \"pass | hold | fail\",\n" +
+                "  \"result\": \"pass | fail\",\n" +
                 "  \"isTorn\": \"Y | N\",\n" +
                 "  \"hasStain\": \"Y | N\",\n" +
                 "  \"hasFading\": \"Y | N\",\n" +
