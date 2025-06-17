@@ -124,17 +124,21 @@ public class AiServiceImpl implements AiService {
                 // 결과 메시지 분기 처리
                 String result = dto.getResult(); // "PASS" or "FAIL"
                 String message;
+                // 상품 테이블 status 값
+                String status;
 
                 if ("PASS".equalsIgnoreCase(result)) {
                     message = String.format(
                             "등록하신 [%s] 브랜드의 [%s] 상품이 AI 검수를 통과했습니다. 곧 최종 검수가 진행될 예정입니다.",
                             brandName, category
                     );
+                    status = "FIRST_INSPECT";
                 } else {
                     message = String.format(
                             "등록하신 [%s] 브랜드의 [%s] 상품이 AI 검수에 실패했습니다. 다시 한 번 확인 후 재등록 부탁드립니다.",
                             brandName, category
                     );
+                    status = "REJECT";
                 }
 
                 // 저장 현재시작
@@ -143,11 +147,16 @@ public class AiServiceImpl implements AiService {
                 // notification pk 저장
                 Long notificationId = notificationMapper.getNextNotificationId();
 
+                String notificationType = "AI_RESULT";
+                String title = "AI 검수결과 안내";
+
+
                 // notification DB 저장
                 NotificationQueryDto notificationQueryDto = NotificationQueryDto.builder()
-                                .notificationType("AI_RESULT")
+                                .notificationId(notificationId)
+                                .notificationType(notificationType)
                                 .userId(userId)
-                                .title("AI 검수결과 안내")
+                                .title(title)
                                 .message(message)
                                 .isRead("N")
                                 .timestamp(now)
@@ -155,13 +164,16 @@ public class AiServiceImpl implements AiService {
                                 .build();
                 notificationMapper.insert(notificationQueryDto);
 
+                // product 테이블 status 갱신
+                productMapper.updateProductAfterInspection(productId, null, null, status, 1L);
+
                 // SSE 알림 추가
                 notificationService.sendNotification(new NotificationDto(
                         notificationId,
                         userId,
-                        "AI 검수결과 안내",
+                        title,
                         message,
-                        "AI_RESULT",
+                        notificationType,
                         "N",
                         now
                 ));

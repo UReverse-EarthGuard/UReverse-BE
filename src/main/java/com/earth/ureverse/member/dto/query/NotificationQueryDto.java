@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class NotificationQueryDto {
+    private Long notificationId;
     private Long userId;
     private String notificationType; // AI_RESULT, FINAL_INSPECTION
     private String title;
@@ -18,7 +19,8 @@ public class NotificationQueryDto {
     private Long createUserId;
 
     @Builder
-    public NotificationQueryDto(Long userId, String notificationType, String title, String message, String isRead, LocalDateTime timestamp, Long createUserId) {
+    public NotificationQueryDto(Long notificationId, Long userId, String notificationType, String title, String message, String isRead, LocalDateTime timestamp, Long createUserId) {
+        this.notificationId = notificationId;
         this.userId = userId;
         this.notificationType = notificationType;
         this.title = title;

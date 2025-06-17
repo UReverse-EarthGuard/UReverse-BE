@@ -71,7 +71,6 @@ public class NotificationController {
     @GetMapping("/unread-count")
     public CommonResponseEntity<Integer> getUnreadCount(@AuthenticationPrincipal CustomUserDetails user) {
         int count = notificationService.countUnread(user.getUserId());
-        System.out.println("카운트수 : "+count);
         return CommonResponseEntity.success(count);
     }
 

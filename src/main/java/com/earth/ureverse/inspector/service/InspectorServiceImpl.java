@@ -5,6 +5,8 @@ import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.NotFoundException;
 import com.earth.ureverse.global.common.response.PaginationResponse;
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.global.notification.dto.NotificationDto;
+import com.earth.ureverse.global.notification.service.NotificationService;
 import com.earth.ureverse.global.util.ProductValidator;
 import com.earth.ureverse.inspector.dto.request.ProductInspectionRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class InspectorServiceImpl implements InspectorService{
     private final ProductValidator productValidator;
     private final InspectorMapper inspectorMapper;
     private final NotificationMapper notificationMapper;
+    private final NotificationService notificationService;
 
     @Override
     public PaginationResponse<ProductSearchResultDto> searchProducts(Long inspectorId, ProductSearchRequestDto dto) {
@@ -106,16 +110,36 @@ public class InspectorServiceImpl implements InspectorService{
             );
         }
 
+        // 저장 현재시작
+        LocalDateTime now = LocalDateTime.now();
+
+        // notification pk 저장
+        Long notificationId = notificationMapper.getNextNotificationId();
+
         // notification DB 저장
         NotificationQueryDto notificationQueryDto = NotificationQueryDto.builder()
-                .notificationType("AI_RESULT")
+                .notificationId(notificationId)
+                .notificationType("FINAL_INSPECTION")
                 .userId(productDetail.getUserId())
-                .title("AI 검수결과 안내")
+                .title("최종 검수결과 안내")
                 .message(message)
                 .isRead("N")
+                .timestamp(now)
+                .createUserId(1L)
                 .build();
 
         notificationMapper.insert(notificationQueryDto);
+
+        // SSE 알림 추가
+        notificationService.sendNotification(new NotificationDto(
+                notificationId,
+                productDetail.getUserId(),
+                "최종 검수결과 안내",
+                message,
+                "FINAL_INSPECTION",
+                "N",
+                now
+        ));
     }
 
     public ProductInspectedDetailDto getInspectedProductDetail(Long productId) {
