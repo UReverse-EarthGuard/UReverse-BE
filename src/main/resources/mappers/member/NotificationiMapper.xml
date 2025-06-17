@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.earth.ureverse.member.mapper.NotificationMapper">
+    <insert id="insert" parameterType="com.earth.ureverse.member.dto.query.NotificationQueryDto">
+        INSERT INTO NOTIFICATION (
+            notification_id,
+            user_id,
+            notification_type,
+            title,
+            message,
+            isRead,
+            created_at,
+            created_by
+        ) VALUES (
+            notification_seq.NEXTVAL,
+            #{userId},
+            #{notificationType},
+            #{title},
+            #{message},
+            #{isRead},
+            #{timestamp},
+            #{createUserId}
+        )
+    </insert>
+
+    <select id="getNextNotificationId" resultType="long">
+        SELECT notification_seq.NEXTVAL FROM dual
+    </select>
+
+    <select id="countUnread" parameterType="long">
+        SELECT COUNT(*)
+        FROM NOTIFICATION
+        WHERE user_id = #{userId}
+        AND isRead = 'N'
+    </select>
+
+</mapper>
