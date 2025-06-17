@@ -18,6 +18,7 @@ public class MemberInfoResponseDto {
     private String email;
     private String phone;
     private String role;
+    private boolean kakaoLinked;
     private Map<String, Integer> productStatus;
 
 }
