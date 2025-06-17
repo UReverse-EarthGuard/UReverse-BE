@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
 public class NotificationQueryDto {
@@ -12,13 +14,17 @@ public class NotificationQueryDto {
     private String title;
     private String message;
     private String isRead; // Y, N
+    private LocalDateTime timestamp;
+    private Long createUserId;
 
     @Builder
-    public NotificationQueryDto(Long userId, String notificationType, String title, String message, String isRead) {
+    public NotificationQueryDto(Long userId, String notificationType, String title, String message, String isRead, LocalDateTime timestamp, Long createUserId) {
         this.userId = userId;
         this.notificationType = notificationType;
         this.title = title;
         this.message = message;
         this.isRead = isRead;
+        this.timestamp = timestamp;
+        this.createUserId = createUserId;
     }
 }

@@ -2,6 +2,8 @@ package com.earth.ureverse.inspector.service;
 
 import com.earth.ureverse.global.common.exception.AiInspectionException;
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.global.notification.dto.NotificationDto;
+import com.earth.ureverse.global.notification.service.NotificationService;
 import com.earth.ureverse.global.util.S3Service;
 import com.earth.ureverse.inspector.dto.query.AiInspectorQueryDto;
 import com.earth.ureverse.inspector.mapper.InspectorMapper;
@@ -17,10 +19,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -42,6 +43,7 @@ public class AiServiceImpl implements AiService {
     private final NotificationMapper notificationMapper;
     private final ProductMapper productMapper;
     private final S3Service s3Service;
+    private final NotificationService notificationService;
     private static final int MAX_RETRY = 10;
 
     @Override
@@ -135,6 +137,12 @@ public class AiServiceImpl implements AiService {
                     );
                 }
 
+                // 저장 현재시작
+                LocalDateTime now = LocalDateTime.now();
+
+                // notification pk 저장
+                Long notificationId = notificationMapper.getNextNotificationId();
+
                 // notification DB 저장
                 NotificationQueryDto notificationQueryDto = NotificationQueryDto.builder()
                                 .notificationType("AI_RESULT")
@@ -142,8 +150,21 @@ public class AiServiceImpl implements AiService {
                                 .title("AI 검수결과 안내")
                                 .message(message)
                                 .isRead("N")
+                                .timestamp(now)
+                                .createUserId(1L)
                                 .build();
                 notificationMapper.insert(notificationQueryDto);
+
+                // SSE 알림 추가
+                notificationService.sendNotification(new NotificationDto(
+                        notificationId,
+                        userId,
+                        "AI 검수결과 안내",
+                        message,
+                        "AI_RESULT",
+                        "N",
+                        now
+                ));
                 return; // 성공 후 종료
             }
 
@@ -151,7 +172,7 @@ public class AiServiceImpl implements AiService {
             throw new AiInspectionException("AI 응답 누락으로 최대 재시도 초과");
 
         } catch (Exception e) {
-            // ✅ 실패 시 관련 데이터 삭제
+            // 실패 시 관련 데이터 삭제
             try {
                 productMapper.deleteById(productId);
             } catch (Exception ignored) {

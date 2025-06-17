@@ -21,8 +21,20 @@
             #{title},
             #{message},
             #{isRead},
-            SYSDATE,
-            #{userId}
+            #{timestamp},
+            #{createUserId}
         )
     </insert>
+
+    <select id="getNextNotificationId" resultType="long">
+        SELECT notification_seq.NEXTVAL FROM dual
+    </select>
+
+    <select id="countUnread" parameterType="long">
+        SELECT COUNT(*)
+        FROM NOTIFICATION
+        WHERE user_id = #{userId}
+        AND isRead = 'N'
+    </select>
+
 </mapper>
