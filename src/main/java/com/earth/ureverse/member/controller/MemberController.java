@@ -2,6 +2,7 @@ package com.earth.ureverse.member.controller;
 
 import com.earth.ureverse.global.auth.CustomUserDetails;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
+import com.earth.ureverse.global.notification.dto.NotificationDto;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
@@ -20,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @Tag(name = "Member", description = "고객 서비스 API 입니다.")
 @RestController
@@ -108,5 +110,21 @@ public class MemberController {
         memberService.registerProduct(dto, customUserDetails.getUserId());
 
         return CommonResponseEntity.success("상품 등록을 성공했습니다.");
+    }
+
+    @GetMapping("/notifications")
+    public CommonResponseEntity<List<NotificationDto>> getNotifications(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        List<NotificationDto> notificationDtoList = memberService.getNotifications(customUserDetails.getUserId());
+        return CommonResponseEntity.success(notificationDtoList);
+    }
+
+    @PutMapping("/readNotification")
+    public CommonResponseEntity<String> readNotification(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody List<Long> notificationIdList
+            ){
+        Long userId = customUserDetails.getUserId();
+        memberService.markNotificationsAsRead(userId, notificationIdList);
+        return CommonResponseEntity.success("알림 읽음 처리 완료");
     }
 }

@@ -221,6 +221,7 @@
             resultType="com.earth.ureverse.admin.dto.response.ProductDetailResponse">
         SELECT
         p.product_id AS id,
+        p.user_id AS userId,
         b.name AS brand,
         c.main_name AS categoryMain,
         c.sub_name AS categorySub,
@@ -382,8 +383,8 @@
     <update id="updateProductAfterInspection">
         UPDATE product
         SET
-        grade = #{grade},
-        paid_point = #{paidPoint},
+        grade = #{grade, jdbcType=CHAR},
+        paid_point = #{paidPoint, jdbcType=NUMERIC},
         status = #{status},
         updated_at = SYSDATE,
         updated_by = #{inspectorId}
@@ -620,6 +621,7 @@
         ORDER BY baseDate ASC
     </select>
 
+    <!--  다음   -->
     <select id="getNextProductId" resultType="long">
         SELECT product_seq.NEXTVAL FROM DUAL
     </select>

@@ -1,19 +1,26 @@
 package com.earth.ureverse.inspector.service;
 
+import com.earth.ureverse.admin.dto.response.ProductDetailResponse;
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.NotFoundException;
 import com.earth.ureverse.global.common.response.PaginationResponse;
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.global.notification.dto.NotificationDto;
+import com.earth.ureverse.global.notification.service.NotificationService;
 import com.earth.ureverse.global.util.ProductValidator;
 import com.earth.ureverse.inspector.dto.request.ProductInspectionRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectedDetailDto;
 import com.earth.ureverse.inspector.dto.response.ProductInspectionDetailDto;
 import com.earth.ureverse.inspector.dto.request.ProductSearchRequestDto;
 import com.earth.ureverse.inspector.dto.response.ProductSearchResultDto;
+import com.earth.ureverse.inspector.mapper.InspectorMapper;
+import com.earth.ureverse.member.dto.query.NotificationQueryDto;
+import com.earth.ureverse.member.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -22,6 +29,9 @@ public class InspectorServiceImpl implements InspectorService{
 
     private final ProductMapper productMapper;
     private final ProductValidator productValidator;
+    private final InspectorMapper inspectorMapper;
+    private final NotificationMapper notificationMapper;
+    private final NotificationService notificationService;
 
     @Override
     public PaginationResponse<ProductSearchResultDto> searchProducts(Long inspectorId, ProductSearchRequestDto dto) {
@@ -80,6 +90,56 @@ public class InspectorServiceImpl implements InspectorService{
         }
 
         productMapper.updateProductAfterInspection(dto.getProductId(), dto.getGrade(), paidPoint, status, inspectorId);
+
+        // Notification 테이블 저장
+        // 결과 메시지 분기 처리
+        String result = dto.getResult(); // "PASS" or "FAIL"
+        String message;
+
+        ProductDetailResponse productDetail = productMapper.getProductDetail(dto.getProductId());
+
+        if ("PASS".equalsIgnoreCase(result)) {
+            message = String.format(
+                    "등록하신 [%s] 브랜드의 [%s] 상품이 최종 검수를 통과했습니다. 곧 제품 수거가 진행될 예정입니다.",
+                    productDetail.getBrand(), (productDetail.getCategoryMain() + " / " + productDetail.getCategorySub())
+            );
+        } else {
+            message = String.format(
+                    "등록하신 [%s] 브랜드의 [%s] 상품이 최종 검수에 실패했습니다. 다시 한 번 확인 후 재등록 부탁드립니다.",
+                    productDetail.getBrand(), (productDetail.getCategoryMain() + " / " + productDetail.getCategorySub())
+            );
+        }
+
+        // 저장 현재시작
+        LocalDateTime now = LocalDateTime.now();
+
+        // notification pk 저장
+        Long notificationId = notificationMapper.getNextNotificationId();
+
+        // notification DB 저장
+        NotificationQueryDto notificationQueryDto = NotificationQueryDto.builder()
+                .notificationId(notificationId)
+                .notificationType("FINAL_INSPECTION")
+                .userId(productDetail.getUserId())
+                .title("최종 검수결과 안내")
+                .message(message)
+                .isRead("N")
+                .timestamp(now)
+                .createUserId(1L)
+                .build();
+
+        notificationMapper.insert(notificationQueryDto);
+
+        // SSE 알림 추가
+        notificationService.sendNotification(new NotificationDto(
+                notificationId,
+                productDetail.getUserId(),
+                "최종 검수결과 안내",
+                message,
+                "FINAL_INSPECTION",
+                "N",
+                now
+        ));
     }
 
     public ProductInspectedDetailDto getInspectedProductDetail(Long productId) {
