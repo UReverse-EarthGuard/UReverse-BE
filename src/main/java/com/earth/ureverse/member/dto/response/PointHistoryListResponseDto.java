@@ -12,6 +12,7 @@ import java.util.List;
 public class PointHistoryListResponseDto {
 
     private int totalPoint;
+    private int salesCount;
     private List<PointHistoryResponseDto> pointHistory;
     private String lastCreatedAt;    // 이전 페이지에서 마지막으로 조회된 데이터의 createdAt
     private Long lastProductId;    // 이전 페이지에서 마지막으로 조회된 데이터의 productId

@@ -127,9 +127,13 @@ public class MemberServiceImpl implements MemberService {
             newLastProductId = lastItem.getProductId();
         }
 
-        int totalPoint = pointMapper.getTotalPoint(userId);
+        PointAndSalesResponseDto pointAndSalesResponseDto = pointMapper.getPointAndSalesCount(userId);
 
-        return new PointHistoryListResponseDto(totalPoint, pointHistory, newLastCreatedAt, newLastProductId);
+        return new PointHistoryListResponseDto(
+                pointAndSalesResponseDto.getTotalPoint(),
+                pointAndSalesResponseDto.getSalesCount(),
+                pointHistory, newLastCreatedAt, newLastProductId
+        );
     }
 
     @Override

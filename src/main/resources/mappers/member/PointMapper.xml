@@ -31,8 +31,8 @@
         FETCH FIRST #{limit} ROWS ONLY
     </select>
 
-    <select id="getTotalPoint" resultType="int">
-        SELECT COALESCE(SUM(PAID_POINT), 0)
+    <select id="getPointAndSalesCount" resultType="com.earth.ureverse.member.dto.response.PointAndSalesResponseDto">
+        SELECT COALESCE(SUM(PAID_POINT), 0) AS TOTALPOINT, COUNT(*) AS SALESCOUNT
         FROM PRODUCT
         WHERE USER_ID = #{userId} AND STATUS = 'FINISH'
     </select>

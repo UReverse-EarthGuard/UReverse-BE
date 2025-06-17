@@ -1,5 +1,6 @@
 package com.earth.ureverse.member.mapper;
 
+import com.earth.ureverse.member.dto.response.PointAndSalesResponseDto;
 import com.earth.ureverse.member.dto.response.PointHistoryResponseDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,6 +17,6 @@ public interface PointMapper {
             @Param(value = "lastProductId") Long lastProductId
     );
 
-    int getTotalPoint(@Param(value = "userId") Long userId);
+    PointAndSalesResponseDto getPointAndSalesCount(@Param(value = "userId") Long userId);
 
 }
