@@ -4,5 +4,36 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.earth.ureverse.inspector.mapper.InspectorMapper">
+    <insert id="insert">
+        INSERT INTO inspection (
+            inspection_id,
+            product_id,
+            inspector_id,
+            inspect_method,
+            notes,
+            result,
+            is_torn,
+            has_stain,
+            has_fading,
+            is_stretched,
+            other_defect,
+            created_at,
+            created_by
+        ) VALUES (
+            inspection_seq.NEXTVAL,
+            #{productId},
+            NULL,
+            #{dto.inspectMethod},
+            #{dto.notes},
+            #{dto.result},
+            #{dto.isTorn},
+            #{dto.hasStain},
+            #{dto.hasFading},
+            #{dto.isStretched},
+            #{dto.otherDefect},
+            SYSDATE,
+            1
+        )
+    </insert>
 
 </mapper>
