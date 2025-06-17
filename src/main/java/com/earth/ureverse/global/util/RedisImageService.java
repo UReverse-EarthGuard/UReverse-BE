@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class RedisService {
+public class RedisImageService {
 
     private final RedisTemplate<String, String> redisTemplate;
 

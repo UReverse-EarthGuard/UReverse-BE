@@ -20,7 +20,7 @@ public class S3Service {
 
     private final S3Presigner s3Presigner;
 
-    private final RedisService redisService;
+    private final RedisImageService redisImageService;
 
     private final S3Client s3Client;
 
@@ -32,10 +32,10 @@ public class S3Service {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    public S3Service(S3Presigner s3Presigner, S3Client s3Client, RedisService redisService, ProductImageMapper productImageMapper) {
+    public S3Service(S3Presigner s3Presigner, S3Client s3Client, RedisImageService redisImageService, ProductImageMapper productImageMapper) {
         this.s3Presigner = s3Presigner;
         this.s3Client = s3Client;
-        this.redisService = redisService;
+        this.redisImageService = redisImageService;
         this.productImageMapper = productImageMapper;
     }
 
@@ -57,7 +57,7 @@ public class S3Service {
         String accessUrl = "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
 
         // Redis에 임시 저장 (예: 24시간 TTL)
-        redisService.saveTempImage(key, accessUrl, Duration.ofHours(24));
+        redisImageService.saveTempImage(key, accessUrl, Duration.ofHours(24));
 
         return new PresignedUploadResponse(presignedUrl.toString(), key, accessUrl);
     }
