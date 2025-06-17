@@ -6,10 +6,14 @@ import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -29,7 +33,7 @@ public class KakaoOAuthController {
     }
 
     @GetMapping("/kakao/callback")
-    public void kakaoCallback(@RequestParam("code") String code,
+    public ResponseEntity<Void> kakaoCallback(@RequestParam("code") String code,
                               @RequestParam("state") String encodedState,
                               HttpServletResponse response) throws IOException {
         // state 파싱
@@ -49,6 +53,9 @@ public class KakaoOAuthController {
                 .queryParam("nickname", encodedNickname)
                 .build().toUriString();
 
-        response.sendRedirect(finalRedirect);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(finalRedirect));
+
+        return new ResponseEntity<>(headers, HttpStatus.FOUND); // 302 Redirect
     }
 }
