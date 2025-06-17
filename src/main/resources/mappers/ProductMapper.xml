@@ -648,4 +648,9 @@
         )
     </insert>
 
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM product
+        WHERE product_id = #{productId}
+    </delete>
+
 </mapper>

@@ -103,7 +103,7 @@ public class MemberController {
     public CommonResponseEntity<String> addProduct(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody ProductUploadRequestDto dto
-    ) throws IOException {
+    ) {
 
         memberService.registerProduct(dto, customUserDetails.getUserId());
 

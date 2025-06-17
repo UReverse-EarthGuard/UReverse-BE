@@ -25,5 +25,5 @@ public interface MemberService {
 
     MemberInfoResponseDto getMyInfo(Long userId);
 
-    void registerProduct(ProductUploadRequestDto dto, Long userId) throws IOException;
+    void registerProduct(ProductUploadRequestDto dto, Long userId) ;
 }
