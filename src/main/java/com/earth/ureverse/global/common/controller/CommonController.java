@@ -1,6 +1,7 @@
 package com.earth.ureverse.global.common.controller;
 
 import com.earth.ureverse.global.common.dto.response.BrandResponseDto;
+import com.earth.ureverse.global.common.dto.response.CategoryListResponseDto;
 import com.earth.ureverse.global.common.response.CommonResponseEntity;
 import com.earth.ureverse.global.common.service.CommonService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,5 +52,17 @@ public class CommonController {
     public CommonResponseEntity<List<BrandResponseDto>> getAllBrand(){
         List<BrandResponseDto> brandResponseDtos = commonService.getBrands();
         return CommonResponseEntity.success(brandResponseDtos);
+    }
+
+    @GetMapping("/allCategoryMainName")
+    public CommonResponseEntity<List<String>> getAllCategory(){
+        List<String> categoryResponseDtos = commonService.getCategories();
+        return CommonResponseEntity.success(categoryResponseDtos);
+    }
+
+    @GetMapping("/brands/{brandId}/categories")
+    public CommonResponseEntity<List<CategoryListResponseDto>> getCategoryInBrand(@PathVariable Long brandId){
+        List<CategoryListResponseDto> categoryResponseDtos = commonService.getCategoriesByBrandId(brandId);
+        return CommonResponseEntity.success(categoryResponseDtos);
     }
 }
