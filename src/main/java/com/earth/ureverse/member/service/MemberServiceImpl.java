@@ -9,6 +9,7 @@ import com.earth.ureverse.global.enums.ProductStatus;
 import com.earth.ureverse.global.mapper.DeliveryMapper;
 import com.earth.ureverse.global.mapper.ProductMapper;
 import com.earth.ureverse.global.notification.dto.NotificationDto;
+import com.earth.ureverse.global.notification.service.NotificationService;
 import com.earth.ureverse.inspector.service.AiService;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
@@ -49,6 +50,7 @@ public class MemberServiceImpl implements MemberService {
     private final DeliveryMapper deliveryMapper;
     private final ProductImageMapper productImageMapper;
     private final AiService aiService;
+    private final NotificationService notificationService;
 
     @Override
     public void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto) {
@@ -235,6 +237,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void markNotificationsAsRead(Long userId, List<Long> notificationIdList) {
         if(notificationIdList == null || notificationIdList.isEmpty()) return;
+        // DB 상태 업데이트
         memberMapper.updateNotificationIsRead(userId, notificationIdList);
+
+        // SSE로 읽음상태 전송
+        notificationService.sendReadUpdate(userId, notificationIdList);
     }
 }

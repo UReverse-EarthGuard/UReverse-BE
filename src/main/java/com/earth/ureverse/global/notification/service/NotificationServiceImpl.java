@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +33,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public int countUnread(Long userId) {
         return notificationMapper.countUnread(userId);
+    }
+
+    @Override
+    public void sendReadUpdate(Long userId, List<Long> notificationIdList) {
+        emitterRepository.send(userId, SseEmitter.event()
+                .name("read-update")
+                .data(notificationIdList));
     }
 }

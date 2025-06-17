@@ -3,6 +3,7 @@ package com.earth.ureverse.global.notification.repository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,4 +24,17 @@ public class SseEmitterRepository {
     public Optional<SseEmitter> get(Long userId) {
         return Optional.ofNullable(emitters.get(userId));
     }
+
+    public void send(Long userId, SseEmitter.SseEventBuilder event) {
+        Optional<SseEmitter> emitter = get(userId);
+        emitter.ifPresent(e -> {
+            try {
+                e.send(event);
+            } catch (IOException ex) {
+                e.completeWithError(ex);
+                emitters.remove(userId);
+            }
+        });
+    }
+
 }
