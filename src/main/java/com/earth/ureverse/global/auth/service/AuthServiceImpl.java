@@ -10,6 +10,7 @@ import com.earth.ureverse.global.auth.dto.response.LoginResponseDto;
 import com.earth.ureverse.global.auth.mapper.AuthMapper;
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.TokenExpiredException;
+import com.earth.ureverse.global.util.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -33,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthMapper authMapper;
     private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender mailSender;
+    private final EmailService emailService;
 
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
@@ -104,7 +105,7 @@ public class AuthServiceImpl implements AuthService {
         String encoded = passwordEncoder.encode(tempPassword);
 
         authMapper.updatePasswordByEmail(email, encoded);
-        sendTempPasswordEmail(email, tempPassword);
+        emailService.sendTempPasswordEmail(email, tempPassword);
     }
 
     private String generateTempPassword() {
@@ -115,12 +116,5 @@ public class AuthServiceImpl implements AuthService {
                 .collect(Collectors.joining());
     }
 
-    private void sendTempPasswordEmail(String email, String tempPassword) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("[U:Reverse] 임시 비밀번호 발송");
-        message.setText("임시 비밀번호: " + tempPassword + "\n로그인 후 반드시 비밀번호를 변경해주세요.");
-        mailSender.send(message);
-    }
 
 }
