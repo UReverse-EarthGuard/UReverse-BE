@@ -93,4 +93,6 @@ public interface ProductMapper {
             @Param("productId") Long productId,
             @Param("userId") Long userId,
             @Param("dto") ProductUploadRequestDto dto);
+
+    void deleteById(Long productId);
 }

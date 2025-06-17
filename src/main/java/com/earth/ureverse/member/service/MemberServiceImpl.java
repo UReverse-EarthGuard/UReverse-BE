@@ -206,7 +206,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void registerProduct(ProductUploadRequestDto dto, Long userId) throws IOException {
+    public void registerProduct(ProductUploadRequestDto dto, Long userId){
 
         // 시퀀스로 insert 될 productId 미리 조회
         Long productId = productMapper.getNextProductId();
