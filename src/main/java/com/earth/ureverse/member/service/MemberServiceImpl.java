@@ -8,6 +8,7 @@ import com.earth.ureverse.global.common.exception.PasswordMismatchException;
 import com.earth.ureverse.global.enums.ProductStatus;
 import com.earth.ureverse.global.mapper.DeliveryMapper;
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.global.notification.dto.NotificationDto;
 import com.earth.ureverse.inspector.service.AiService;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
@@ -226,4 +227,14 @@ public class MemberServiceImpl implements MemberService {
         aiService.aiInspect(dto.getProductsImageUrl(), dto.getCategory(), dto.getBrandName(), productId, dto.getName(), userId);
     }
 
+    @Override
+    public List<NotificationDto> getNotifications(Long userId) {
+        return memberMapper.findNotificationsByUserId(userId);
+    }
+
+    @Override
+    public void markNotificationsAsRead(Long userId, List<Long> notificationIdList) {
+        if(notificationIdList == null || notificationIdList.isEmpty()) return;
+        memberMapper.updateNotificationIsRead(userId, notificationIdList);
+    }
 }
