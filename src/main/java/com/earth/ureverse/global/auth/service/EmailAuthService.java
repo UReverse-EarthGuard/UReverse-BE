@@ -1,7 +1,6 @@
 package com.earth.ureverse.global.auth.service;
 
 import com.earth.ureverse.global.auth.mapper.AuthMapper;
-import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.util.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

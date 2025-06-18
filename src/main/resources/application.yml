@@ -13,3 +13,9 @@ springdoc:
     doc-expansion: none
   paths-to-match:
     - /api/**
+
+spring:
+  data:
+    redis:
+      host: redis
+      port: 6379
