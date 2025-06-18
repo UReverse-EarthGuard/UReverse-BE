@@ -644,7 +644,7 @@
             #{dto.categoryId},
             NULL,
             NULL,
-            'register',
+            'REGISTER',
             SYSDATE,
             #{userId}
         )
@@ -654,5 +654,17 @@
         DELETE FROM product
         WHERE product_id = #{productId}
     </delete>
+
+    <select id="getProductNotificationInfo">
+        SELECT
+            p.product_id as productId,
+            p.user_id as userId,
+            b.name as brand,
+            c.main_name || ' / ' || sub_name as category
+        from product p
+        join brand b on p.brand_id = b.brand_id
+        join category c on p.category_id = c.category_id
+        where p.product_id = #{productId}
+    </select>
 
 </mapper>

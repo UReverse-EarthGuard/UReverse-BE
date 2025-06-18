@@ -2,13 +2,10 @@ package com.earth.ureverse.inspector.service;
 
 import com.earth.ureverse.global.common.exception.AiInspectionException;
 import com.earth.ureverse.global.mapper.ProductMapper;
-import com.earth.ureverse.global.notification.dto.NotificationDto;
-import com.earth.ureverse.global.notification.service.NotificationService;
+import com.earth.ureverse.global.util.NotificationHelper;
 import com.earth.ureverse.global.util.S3Service;
 import com.earth.ureverse.inspector.dto.query.AiInspectorQueryDto;
 import com.earth.ureverse.inspector.mapper.InspectorMapper;
-import com.earth.ureverse.member.dto.query.NotificationQueryDto;
-import com.earth.ureverse.member.mapper.NotificationMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +18,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -40,10 +36,9 @@ public class AiServiceImpl implements AiService {
     private String apiUrl;
 
     private final InspectorMapper inspectorMapper;
-    private final NotificationMapper notificationMapper;
     private final ProductMapper productMapper;
     private final S3Service s3Service;
-    private final NotificationService notificationService;
+    private final NotificationHelper notificationHelper;
     private static final int MAX_RETRY = 10;
 
     @Override
@@ -123,60 +118,17 @@ public class AiServiceImpl implements AiService {
 
                 // 결과 메시지 분기 처리
                 String result = dto.getResult(); // "PASS" or "FAIL"
-                String message;
-                // 상품 테이블 status 값
-                String status;
+                String status = ""; // 상품 테이블 status 값
 
-                if ("PASS".equalsIgnoreCase(result)) {
-                    message = String.format(
-                            "등록하신 [%s] 브랜드의 [%s] 상품이 AI 검수를 통과했습니다. 곧 최종 검수가 진행될 예정입니다.",
-                            brandName, category
-                    );
-                    status = "FIRST_INSPECT";
-                } else {
-                    message = String.format(
-                            "등록하신 [%s] 브랜드의 [%s] 상품이 AI 검수에 실패했습니다. 다시 한 번 확인 후 재등록 부탁드립니다.",
-                            brandName, category
-                    );
-                    status = "REJECT";
-                }
-
-                // 저장 현재시작
-                LocalDateTime now = LocalDateTime.now();
-
-                // notification pk 저장
-                Long notificationId = notificationMapper.getNextNotificationId();
+                if ("PASS".equalsIgnoreCase(result)) status = "FIRST_INSPECT";
+                else status = "REJECT";
 
                 String notificationType = "AI_RESULT";
-                String title = "AI 검수결과 안내";
-
-
-                // notification DB 저장
-                NotificationQueryDto notificationQueryDto = NotificationQueryDto.builder()
-                                .notificationId(notificationId)
-                                .notificationType(notificationType)
-                                .userId(userId)
-                                .title(title)
-                                .message(message)
-                                .isRead("N")
-                                .timestamp(now)
-                                .createUserId(1L)
-                                .build();
-                notificationMapper.insert(notificationQueryDto);
-
                 // product 테이블 status 갱신
                 productMapper.updateProductAfterInspection(productId, null, null, status, 1L);
 
-                // SSE 알림 추가
-                notificationService.sendNotification(new NotificationDto(
-                        notificationId,
-                        userId,
-                        title,
-                        message,
-                        notificationType,
-                        "N",
-                        now
-                ));
+                notificationHelper.updateNotification(productId, status, notificationType, 1L);
+
                 return; // 성공 후 종료
             }
 

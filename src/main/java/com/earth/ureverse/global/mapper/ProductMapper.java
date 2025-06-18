@@ -1,5 +1,6 @@
 package com.earth.ureverse.global.mapper;
 
+import com.earth.ureverse.admin.dto.query.ProductNotificationInfoDto;
 import com.earth.ureverse.admin.dto.request.PickupSearchRequest;
 import com.earth.ureverse.admin.dto.request.ProductSearchRequest;
 import com.earth.ureverse.admin.dto.response.*;
@@ -95,4 +96,6 @@ public interface ProductMapper {
             @Param("dto") ProductUploadRequestDto dto);
 
     void deleteById(Long productId);
+
+    ProductNotificationInfoDto getProductNotificationInfo(@Param("productId") Long productId);
 }

@@ -2,6 +2,7 @@ package com.earth.ureverse.admin.service;
 
 import com.earth.ureverse.global.common.exception.UpdateStatusException;
 import com.earth.ureverse.global.mapper.ProductMapper;
+import com.earth.ureverse.global.util.NotificationHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 public class ProductStatusAsyncService {
 
     private final ProductMapper productMapper;
+    private final NotificationHelper notificationHelper;
 
     //비동기 실행
     @Async
@@ -30,5 +32,7 @@ public class ProductStatusAsyncService {
     //상태 업데이트
     public void updateStatus(Long productId, String status, Long updatedBy) {
         productMapper.updateProductStatus(productId, status, LocalDateTime.now(), updatedBy);
+
+        notificationHelper.updateNotification(productId, status, status, updatedBy);
     }
 }
