@@ -49,6 +49,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/inspectors/**").hasRole("INSPECTOR")
                         .requestMatchers("/api/v1/members/**").hasRole("MEMBER")
                         .requestMatchers("/api/v1/common/**").hasAnyRole("ADMIN", "INSPECTOR", "MEMBER")
+                        .requestMatchers("/api/v1/notifications/subscribe/**").permitAll()
                         .anyRequest().authenticated()
                 )
         ;
@@ -64,16 +65,33 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://localhost:*", "https://localhost:*",
-                "https://ureverse-fe-member.vercel.app",
-                "https://ureverse-fe-corporate.vercel.app"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);  // Authorization 헤더, 쿠키 전송 허용
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/v1/**", config);
+
+        // SSE 구독 요청 - credentials 허용 X
+        CorsConfiguration sseConfig = new CorsConfiguration();
+        sseConfig.setAllowedOriginPatterns(List.of(
+                "http://localhost:*", "https://localhost:*",
+                "https://ureverse-fe-member.vercel.app",
+                "https://ureverse-fe-corporate.vercel.app"
+        ));
+        sseConfig.setAllowedMethods(List.of("GET"));
+        sseConfig.setAllowedHeaders(List.of("*"));
+        sseConfig.setAllowCredentials(false); // EventSource는 credentials 사용 불가
+        source.registerCorsConfiguration("/api/v1/notifications/subscribe/**", sseConfig);
+
+        // 일반 API 요청 - credentials 허용 O
+        CorsConfiguration apiConfig = new CorsConfiguration();
+        apiConfig.setAllowedOriginPatterns(List.of(
+                "http://localhost:*", "https://localhost:*",
+                "https://ureverse-fe-member.vercel.app",
+                "https://ureverse-fe-corporate.vercel.app"
+        ));
+        apiConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        apiConfig.setAllowedHeaders(List.of("*"));
+        apiConfig.setAllowCredentials(true); // 쿠키 및 인증 허용
+        source.registerCorsConfiguration("/api/v1/**", apiConfig);
+
         return source;
     }
+
 }

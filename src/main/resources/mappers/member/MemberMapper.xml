@@ -72,4 +72,30 @@
         GROUP BY STATUS
     </select>
 
+    <select id="findNotificationsByUserId" parameterType="long" resultType="com.earth.ureverse.global.notification.dto.NotificationDto">
+        SELECT
+            notification_id as notificationId,
+            user_id as userId,
+            title as title,
+            message as message,
+            notification_type as notificationType,
+            isRead as isRead,
+            created_at as createdAt
+        from notification
+        where user_id = #{userId}
+        ORDER BY created_at desc
+    </select>
+
+    <update id="updateNotificationIsRead">
+        update notification
+        set isRead = 'Y',
+            updated_at = SYSDATE,
+            updated_by = #{userId}
+        WHERE user_id = #{userId}
+        AND notification_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
 </mapper>

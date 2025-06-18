@@ -63,4 +63,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 
+    // SSE 는 통신에서 제외
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/api/v1/notifications/subscribe");
+    }
+
 }

@@ -16,6 +16,7 @@ public class ProductUploadRequestDto {
     private String phone;
     private String zipCode;
     private String brandId;
+    private String brandName;
     private String categoryId;
     private String category;
     private List<String> productsImageUrl;

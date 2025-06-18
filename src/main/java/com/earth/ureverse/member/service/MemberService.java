@@ -1,5 +1,7 @@
 package com.earth.ureverse.member.service;
 
+import com.earth.ureverse.global.auth.CustomUserDetails;
+import com.earth.ureverse.global.notification.dto.NotificationDto;
 import com.earth.ureverse.member.dto.request.ChangePasswordRequestDto;
 import com.earth.ureverse.member.dto.request.ProductUploadRequestDto;
 import com.earth.ureverse.member.dto.request.UpdateMemberRequestDto;
@@ -10,6 +12,7 @@ import com.earth.ureverse.member.dto.response.SalesHistoryListResponseDto;
 import jakarta.validation.Valid;
 
 import java.io.IOException;
+import java.util.List;
 
 public interface MemberService {
 
@@ -26,4 +29,8 @@ public interface MemberService {
     MemberInfoResponseDto getMyInfo(Long userId);
 
     void registerProduct(ProductUploadRequestDto dto, Long userId) ;
+
+    List<NotificationDto> getNotifications(Long userId);
+
+    void markNotificationsAsRead(Long userId, List<Long> notificationIdList);
 }
