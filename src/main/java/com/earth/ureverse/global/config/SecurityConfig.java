@@ -14,6 +14,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -56,6 +61,37 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        // SSE 구독 요청 - credentials 허용 X
+        CorsConfiguration sseConfig = new CorsConfiguration();
+        sseConfig.setAllowedOriginPatterns(List.of(
+                "http://localhost:*", "https://localhost:*",
+                "https://ureverse-fe-member.vercel.app",
+                "https://ureverse-fe-corporate.vercel.app"
+        ));
+        sseConfig.setAllowedMethods(List.of("GET"));
+        sseConfig.setAllowedHeaders(List.of("*"));
+        sseConfig.setAllowCredentials(false); // EventSource는 credentials 사용 불가
+        source.registerCorsConfiguration("/api/v1/notifications/subscribe/**", sseConfig);
+
+        // 일반 API 요청 - credentials 허용 O
+        CorsConfiguration apiConfig = new CorsConfiguration();
+        apiConfig.setAllowedOriginPatterns(List.of(
+                "http://localhost:*", "https://localhost:*",
+                "https://ureverse-fe-member.vercel.app",
+                "https://ureverse-fe-corporate.vercel.app"
+        ));
+        apiConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        apiConfig.setAllowedHeaders(List.of("*"));
+        apiConfig.setAllowCredentials(true); // 쿠키 및 인증 허용
+        source.registerCorsConfiguration("/api/v1/**", apiConfig);
+
+        return source;
     }
 
 }
