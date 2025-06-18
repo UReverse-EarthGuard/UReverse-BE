@@ -12,6 +12,6 @@ public class ProductSearchResultDto {
     private String categorySub;
     private String status;
     private String imageUrl; // 대표 이미지 1개
-    private String createdAt;
+    private String updatedAt;
     private Integer expectedPoint;
 }

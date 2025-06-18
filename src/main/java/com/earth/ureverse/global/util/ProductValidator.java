@@ -29,7 +29,7 @@ public class ProductValidator {
 
     public void validateProductSecondInspected(Long productId) {
         String status = validateProductStatus(productId);
-        Set<String> allowedStatuses = Set.of("SECOND_INSPECT", "DELIVERY_REQUEST", "DELIVERING", "FINISH");
+        Set<String> allowedStatuses = Set.of("REJECT", "SECOND_INSPECT", "DELIVERY_REQUEST", "DELIVERING", "FINISH");
         if (!allowedStatuses.contains(status)) {
             throw new BadRequestException("검수 완료된 상품 상태가 아닙니다. 현재 상태: " + status);
         }
