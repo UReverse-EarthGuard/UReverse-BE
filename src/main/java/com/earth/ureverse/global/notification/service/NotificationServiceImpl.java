@@ -4,6 +4,7 @@ import com.earth.ureverse.global.notification.dto.NotificationDto;
 import com.earth.ureverse.global.notification.repository.SseEmitterRepository;
 import com.earth.ureverse.member.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
     private final SseEmitterRepository emitterRepository;
@@ -24,8 +26,10 @@ public class NotificationServiceImpl implements NotificationService {
                 emitter.send(SseEmitter.event()
                         .name("notification")
                         .data(notification));
+                log.info("✅ SSE 알림 전송 성공: {}", notification);
             } catch (IOException e) {
                 emitter.completeWithError(e);
+                log.error("❌ SSE 전송 실패{}", String.valueOf(e));
             }
         });
     }
