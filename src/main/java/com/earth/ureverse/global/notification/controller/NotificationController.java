@@ -7,6 +7,7 @@ import com.earth.ureverse.global.notification.dto.NotificationDto;
 import com.earth.ureverse.global.notification.repository.SseEmitterRepository;
 import com.earth.ureverse.global.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,9 @@ public class NotificationController {
     private final JwtTokenProvider jwtTokenProvider;
     private final NotificationService notificationService;
 
+    @Value("${sse.valid-time}")
+    private long sseValidTime;
+
     @GetMapping("/subscribe/{userId}")
     public SseEmitter subscribe(@PathVariable Long userId, @RequestParam("token") String token) {
         // 1. 토큰 유효성 검사
@@ -40,7 +44,7 @@ public class NotificationController {
         }
 
         // 4. Emitter 연결
-        SseEmitter emitter = new SseEmitter(60 * 1000L);
+        SseEmitter emitter = new SseEmitter(sseValidTime);
         emitterRepository.save(userId, emitter);
         try {
             emitter.send(SseEmitter.event().name("connect").data("SSE 연결 성공"));
