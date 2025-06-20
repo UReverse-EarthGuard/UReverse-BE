@@ -4,6 +4,7 @@ import com.earth.ureverse.global.auth.JwtTokenProvider;
 import com.earth.ureverse.global.auth.dto.response.KakaoUserInfo;
 import com.earth.ureverse.global.auth.mapper.AuthMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,7 +13,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.json.JSONObject;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import org.springframework.web.reactive.function.BodyInserters;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoOauthService {
@@ -23,9 +28,13 @@ public class KakaoOauthService {
     @Value("${kakao.redirect-uri}")
     private String kakaoRedirectUri;
 
+    @Value("${kakao.admin-key}")
+    private String adminKey;
+
     private final RestTemplate restTemplate = new RestTemplate();
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthMapper authMapper;
+    private final WebClient webClient;
 
     // 카카오 로그인 URL 생성
     public String getKakaoLoginUrl(String encodedState) {
@@ -96,5 +105,28 @@ public class KakaoOauthService {
         String nickname = profile.optString("nickname", null);
 
         return new KakaoUserInfo(kakaoId, nickname);
+    }
+
+    public void unlinkKakao(String kakaoUserId) {
+        try {
+            String kakaoUnlinkUrl = "https://kapi.kakao.com/v1/user/unlink";
+
+            webClient.post()
+                    .uri(kakaoUnlinkUrl)
+                    .header(HttpHeaders.AUTHORIZATION, "KakaoAK " + adminKey)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                    .body(BodyInserters.fromFormData("target_id_type", "user_id")
+                            .with("target_id", kakaoUserId))
+                    .retrieve()
+                    .onStatus(status -> !status.is2xxSuccessful(), response ->
+                            response.bodyToMono(String.class)
+                                    .doOnNext(errorBody -> log.warn("카카오 탈퇴 실패 응답: {}", errorBody))
+                                    .flatMap(errorBody -> Mono.error(new RuntimeException("카카오 탈퇴 실패: " + errorBody))))
+                    .bodyToMono(String.class)
+                    .doOnNext(responseBody -> log.info("카카오 탈퇴 성공: {}", responseBody))
+                    .block();
+        } catch (Exception ex) {
+            log.error("카카오 탈퇴 중 예외 발생", ex);
+        }
     }
 }
