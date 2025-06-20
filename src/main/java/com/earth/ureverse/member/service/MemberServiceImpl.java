@@ -2,6 +2,7 @@ package com.earth.ureverse.member.service;
 
 import com.earth.ureverse.global.auth.dto.db.AuthenticatedUser;
 import com.earth.ureverse.global.auth.mapper.AuthMapper;
+import com.earth.ureverse.global.auth.service.KakaoOauthService;
 import com.earth.ureverse.global.common.exception.AlreadyWithdrawnException;
 import com.earth.ureverse.global.common.exception.IllegalParameterException;
 import com.earth.ureverse.global.common.exception.PasswordMismatchException;
@@ -51,6 +52,7 @@ public class MemberServiceImpl implements MemberService {
     private final ProductImageMapper productImageMapper;
     private final AiService aiService;
     private final NotificationService notificationService;
+    private final KakaoOauthService kakaoOauthService;
 
     @Override
     public void withdraw(Long userId, WithdrawRequestDto withdrawRequestDto) {
@@ -63,6 +65,10 @@ public class MemberServiceImpl implements MemberService {
 
         if (!passwordEncoder.matches(withdrawRequestDto.getPassword(), authenticatedUser.getPassword())) {
             throw new PasswordMismatchException();
+        }
+
+        if (authenticatedUser.getKakaoId() != null){
+            kakaoOauthService.unlinkKakao(authenticatedUser.getKakaoId());
         }
 
         memberMapper.updateIsActive(userId, "inactive");
