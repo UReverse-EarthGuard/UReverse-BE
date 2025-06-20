@@ -5,6 +5,7 @@ import com.earth.ureverse.global.mapper.ProductMapper;
 import com.earth.ureverse.global.notification.dto.NotificationDto;
 import com.earth.ureverse.global.notification.service.NotificationService;
 import com.earth.ureverse.member.dto.query.NotificationQueryDto;
+import com.earth.ureverse.member.mapper.MemberMapper;
 import com.earth.ureverse.member.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ public class NotificationHelper {
     private final ProductMapper productMapper;
     private final NotificationMapper notificationMapper;
     private final NotificationService notificationService;
+    private final EmailService emailService;
+    private final MemberMapper memberMapper;
 
     /**
      *
@@ -112,6 +115,16 @@ public class NotificationHelper {
             ));
             log.info("알림 전송 통과");
             notificationMapper.insert(notificationQueryDto);
+
+            String email = memberMapper.getEmailByUserId(userId);
+            if (email != null && !email.isEmpty()) {
+                try {
+                    emailService.sendNotificationEmail(email, title, message);
+                    log.info("이메일 전송 완료: {}", email);
+                } catch (Exception e) {
+                    log.error("이메일 전송 실패: {}", e.getMessage(), e);
+                }
+            }
         }
     }
 }

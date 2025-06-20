@@ -32,4 +32,6 @@ public interface MemberMapper {
     List<NotificationDto> findNotificationsByUserId(Long userId);
 
     void updateNotificationIsRead(@Param("userId") Long userId, @Param("ids") List<Long> ids);
+
+    String getEmailByUserId(@Param("userId") Long userId);
 }

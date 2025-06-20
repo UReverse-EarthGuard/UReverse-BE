@@ -98,4 +98,10 @@
         </foreach>
     </update>
 
+    <select id="getEmailByUserId" parameterType="long" resultType="string">
+        SELECT email
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>
