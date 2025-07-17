@@ -8,9 +8,10 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/UReverse-EarthGuard/UReverse-BE'
+                git branch: 'dev', url: 'https://github.com/UReverse-EarthGuard/UReverse-BE'
             }
         }
+
 
         stage('Build Docker Image') {
             steps {
