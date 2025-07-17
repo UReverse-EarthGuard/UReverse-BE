@@ -12,6 +12,11 @@ pipeline {
             }
         }
 
+        stage('Build Jar') {
+            steps {
+                sh './gradlew clean build'
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
