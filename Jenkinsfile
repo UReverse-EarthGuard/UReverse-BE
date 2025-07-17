@@ -16,9 +16,14 @@ pipeline {
             steps {
                 sh 'chmod +x ./gradlew'
                 sh './gradlew clean build -x test'
+
+                // .jar 추출 후 app.jar로 복사
+                script {
+                    JAR_NAME = sh(script: "ls build/libs/*.jar | head -n 1", returnStdout: true).trim()
+                    sh "cp $JAR_NAME app.jar"
+                }
             }
         }
-
 
         stage('Build Docker Image') {
             steps {
@@ -40,3 +45,4 @@ pipeline {
         }
     }
 }
+
