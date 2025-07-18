@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ureverse-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ureverse-be
+  template:
+    metadata:
+      labels:
+        app: ureverse-be
+    spec:
+      containers:
+      - name: ureverse-be
+        image: taeyeon0319/ureverse-be:kty
+        ports:
+        - containerPort: 8080
