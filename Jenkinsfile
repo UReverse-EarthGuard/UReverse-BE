@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'java17-docker-agent' }
 
     environment {
         IMAGE_NAME = "taeyeon0319/ureverse-be:kty"
