@@ -14,30 +14,26 @@ pipeline {
 
         stage('Build Jar') {
             steps {
-                sh 'chmod +x ./gradlew'
-                sh './gradlew clean build -x test'
+                bat 'gradlew.bat clean build -x test'
 
-                // .jar 추출 후 app.jar로 복사
                 script {
-                    JAR_NAME = sh(script: "ls build/libs/*.jar | head -n 1", returnStdout: true).trim()
-                    sh "cp $JAR_NAME app.jar"
+                    def jarName = bat(script: 'for /r build\\libs %%f in (*.jar) do @echo %%f & goto :done\n:done', returnStdout: true).trim()
+                    bat "copy ${jarName} app.jar"
                 }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    docker.build("${IMAGE_NAME}")
-                }
+                bat "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                    sh """
-                        echo "$PASSWORD" | docker login -u "$USERNAME" --password-stdin
+                    bat """
+                        echo %PASSWORD% | docker login -u %USERNAME% --password-stdin
                         docker push ${IMAGE_NAME}
                     """
                 }
@@ -45,4 +41,3 @@ pipeline {
         }
     }
 }
-
